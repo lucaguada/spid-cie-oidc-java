@@ -1,51 +1,51 @@
 package it.spid.cie.oidc.schemas;
 
-import java.io.Serializable;
-import java.util.Map;
-
 import it.spid.cie.oidc.util.Validator;
 import net.jcip.annotations.Immutable;
+
+import java.io.Serializable;
+import java.util.Map;
 
 @Immutable
 public abstract class ClaimItem implements Serializable {
 
-	public static final String ATTRIBUTE_BASE_URI = "https://attributes.eid.gov.it/";
+  public static final String ATTRIBUTE_BASE_URI = "https://attributes.eid.gov.it/";
 
-	private static final long serialVersionUID = 7770619618195001323L;
+  private static final long serialVersionUID = 7770619618195001323L;
 
-	private final String name;
-	private final String alias;
+  private final String name;
+  private final String alias;
 
-	public final String getAlias() {
-		return alias;
-	}
+  protected ClaimItem(
+    String name, String alias, Map<String, ClaimItem> claims,
+    Map<String, String> aliasMap) {
 
-	public final String getName() {
-		return name;
-	}
+    if (Validator.isNullOrEmpty(name) || Validator.isNullOrEmpty(alias)) {
+      throw new IllegalArgumentException("name or alias cannot be null");
+    }
 
-	protected ClaimItem(
-		String name, String alias, Map<String, ClaimItem> claims,
-		Map<String, String> aliasMap) {
+    if (aliasMap.containsKey(alias)) {
+      throw new IllegalArgumentException("alias already configured");
+    }
 
-		if (Validator.isNullOrEmpty(name) || Validator.isNullOrEmpty(alias)) {
-			throw new IllegalArgumentException("name or alias cannot be null");
-		}
+    if (claims.containsKey(name)) {
+      throw new IllegalArgumentException("name already configured");
+    }
 
-		if (aliasMap.containsKey(alias)) {
-			throw new IllegalArgumentException("alias already configured");
-		}
+    aliasMap.put(alias, name);
 
-		if (claims.containsKey(name)) {
-			throw new IllegalArgumentException("name already configured");
-		}
+    this.name = name;
+    this.alias = alias;
 
-		aliasMap.put(alias, name);
+    claims.put(name, this);
+  }
 
-		this.name = name;
-		this.alias = alias;
+  public final String getAlias() {
+    return alias;
+  }
 
-		claims.put(name, this);
-	}
+  public final String getName() {
+    return name;
+  }
 
 }

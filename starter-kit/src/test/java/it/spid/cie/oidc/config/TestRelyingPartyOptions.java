@@ -1,568 +1,553 @@
 package it.spid.cie.oidc.config;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import it.spid.cie.oidc.schemas.*;
+import it.spid.cie.oidc.util.ArrayUtil;
+import org.json.JSONObject;
+import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.json.JSONObject;
-import org.junit.Test;
-
-import it.spid.cie.oidc.schemas.AcrValue;
-import it.spid.cie.oidc.schemas.CIEClaimItem;
-import it.spid.cie.oidc.schemas.ClaimSection;
-import it.spid.cie.oidc.schemas.OIDCProfile;
-import it.spid.cie.oidc.schemas.SPIDClaimItem;
-import it.spid.cie.oidc.util.ArrayUtil;
+import static org.junit.Assert.*;
 
 public class TestRelyingPartyOptions {
 
-	@Test
-	public void testClass1() {
-		RelyingPartyOptions res = new RelyingPartyOptions();
+  @Test
+  public void testClass1() {
+    RelyingPartyOptions res = new RelyingPartyOptions();
 
-		res.getApplicationType();
+    res.getApplicationType();
 
-		// ApplicationName
+    // ApplicationName
 
-		String appName = res.getApplicationName();
+    String appName = res.getApplicationName();
 
-		res.setApplicationName("");
+    res.setApplicationName("");
 
-		assertEquals(appName, res.getApplicationName());
+    assertEquals(appName, res.getApplicationName());
 
-		res.setApplicationName("test");
+    res.setApplicationName("test");
 
-		assertEquals("test", res.getApplicationName());
+    assertEquals("test", res.getApplicationName());
 
-		// ClientId
+    // ClientId
 
-		String clientId = res.getClientId();
+    String clientId = res.getClientId();
 
-		res.setClientId("");
+    res.setClientId("");
 
-		assertEquals(clientId, res.getClientId());
+    assertEquals(clientId, res.getClientId());
 
-		res.setClientId("test");
+    res.setClientId("test");
 
-		assertEquals("test", res.getClientId());
+    assertEquals("test", res.getClientId());
 
-		// Contacts
+    // Contacts
 
-		res.setContacts(null);
+    res.setContacts(null);
 
-		assertTrue(res.getContacts().size() == 0);
+    assertTrue(res.getContacts().size() == 0);
 
-		Set<String> contacts = new HashSet<>();
+    Set<String> contacts = new HashSet<>();
 
-		res.setContacts(contacts);
+    res.setContacts(contacts);
 
-		assertTrue(res.getContacts().size() == 0);
+    assertTrue(res.getContacts().size() == 0);
 
-		contacts.add("test@test.com");
+    contacts.add("test@test.com");
 
-		res.setContacts(contacts);
+    res.setContacts(contacts);
 
-		assertTrue(res.getContacts().size() == 1);
+    assertTrue(res.getContacts().size() == 1);
 
-		// DefaultTrustAnchor
+    // DefaultTrustAnchor
 
-		String defaultTA = res.getDefaultTrustAnchor();
+    String defaultTA = res.getDefaultTrustAnchor();
 
-		res.setDefaultTrustAnchor("");
+    res.setDefaultTrustAnchor("");
 
-		assertEquals(defaultTA, res.getDefaultTrustAnchor());
+    assertEquals(defaultTA, res.getDefaultTrustAnchor());
 
-		res.setDefaultTrustAnchor("test");
+    res.setDefaultTrustAnchor("test");
 
-		assertEquals("test", res.getDefaultTrustAnchor());
+    assertEquals("test", res.getDefaultTrustAnchor());
 
-		// Jwk
+    // Jwk
 
-		String jwk = res.getJwkFed();
+    String jwk = res.getJwkFed();
 
-		res.setJWKFed("");
+    res.setJWKFed("");
 
-		assertEquals(jwk, res.getJwkFed());
+    assertEquals(jwk, res.getJwkFed());
 
-		res.setJWKFed("test");
+    res.setJWKFed("test");
 
-		assertEquals("test", res.getJwkFed());
+    assertEquals("test", res.getJwkFed());
 
-		// Login
+    // Login
 
-		String login = res.getLoginURL();
+    String login = res.getLoginURL();
 
-		res.setLoginURL("");
+    res.setLoginURL("");
 
-		assertEquals(login, res.getLoginURL());
+    assertEquals(login, res.getLoginURL());
 
-		res.setLoginURL("test");
+    res.setLoginURL("test");
 
-		assertEquals("test", res.getLoginURL());
+    assertEquals("test", res.getLoginURL());
 
-		// LoginRedirect
+    // LoginRedirect
 
-		String loginRedirect = res.getLoginRedirectURL();
+    String loginRedirect = res.getLoginRedirectURL();
 
-		res.setLoginRedirectURL("");
+    res.setLoginRedirectURL("");
 
-		assertEquals(loginRedirect, res.getLoginRedirectURL());
+    assertEquals(loginRedirect, res.getLoginRedirectURL());
 
-		res.setLoginRedirectURL("test");
+    res.setLoginRedirectURL("test");
 
-		assertEquals("test", res.getLoginRedirectURL());
+    assertEquals("test", res.getLoginRedirectURL());
 
-		// LogoutRedirect
+    // LogoutRedirect
 
-		String logoutRedirect = res.getLogoutRedirectURL();
+    String logoutRedirect = res.getLogoutRedirectURL();
 
-		res.setLogoutRedirectURL("");
+    res.setLogoutRedirectURL("");
 
-		assertEquals(logoutRedirect, res.getLogoutRedirectURL());
+    assertEquals(logoutRedirect, res.getLogoutRedirectURL());
 
-		res.setLogoutRedirectURL("test");
+    res.setLogoutRedirectURL("test");
 
-		assertEquals("test", res.getLogoutRedirectURL());
+    assertEquals("test", res.getLogoutRedirectURL());
 
-		// AcrValue
+    // AcrValue
 
-		res.setProfileAcr(null, "l4");
+    res.setProfileAcr(null, "l4");
 
-		// AcrValue SPID
+    // AcrValue SPID
 
-		String spidAcrValue = res.getAcrValue(OIDCProfile.SPID);
+    String spidAcrValue = res.getAcrValue(OIDCProfile.SPID);
 
-		res.setProfileAcr(OIDCProfile.SPID, null);
+    res.setProfileAcr(OIDCProfile.SPID, null);
 
-		assertEquals(spidAcrValue, res.getAcrValue(OIDCProfile.SPID));
+    assertEquals(spidAcrValue, res.getAcrValue(OIDCProfile.SPID));
 
-		res.setProfileAcr(OIDCProfile.SPID, "l4");
+    res.setProfileAcr(OIDCProfile.SPID, "l4");
 
-		assertEquals(spidAcrValue, res.getAcrValue(OIDCProfile.SPID));
+    assertEquals(spidAcrValue, res.getAcrValue(OIDCProfile.SPID));
 
-		res.setProfileAcr(OIDCProfile.SPID, "l1");
+    res.setProfileAcr(OIDCProfile.SPID, "l1");
 
-		assertEquals(AcrValue.L1.value(), res.getAcrValue(OIDCProfile.SPID));
+    assertEquals(AcrValue.L1.value(), res.getAcrValue(OIDCProfile.SPID));
 
-		// AcrValue CIE
+    // AcrValue CIE
 
-		String cieAcrValue = res.getAcrValue(OIDCProfile.CIE);
+    String cieAcrValue = res.getAcrValue(OIDCProfile.CIE);
 
-		res.setProfileAcr(OIDCProfile.CIE, null);
+    res.setProfileAcr(OIDCProfile.CIE, null);
 
-		assertEquals(cieAcrValue, res.getAcrValue(OIDCProfile.CIE));
+    assertEquals(cieAcrValue, res.getAcrValue(OIDCProfile.CIE));
 
-		res.setProfileAcr(OIDCProfile.CIE, "l4");
+    res.setProfileAcr(OIDCProfile.CIE, "l4");
 
-		assertEquals(cieAcrValue, res.getAcrValue(OIDCProfile.CIE));
+    assertEquals(cieAcrValue, res.getAcrValue(OIDCProfile.CIE));
 
-		res.setProfileAcr(OIDCProfile.CIE, "l1");
+    res.setProfileAcr(OIDCProfile.CIE, "l1");
 
-		assertEquals(AcrValue.L1.value(), res.getAcrValue(OIDCProfile.CIE));
+    assertEquals(AcrValue.L1.value(), res.getAcrValue(OIDCProfile.CIE));
 
-		// RedirectUris
+    // RedirectUris
 
-		res.setRedirectUris(null);
+    res.setRedirectUris(null);
 
-		assertTrue(res.getRedirectUris().size() == 0);
+    assertTrue(res.getRedirectUris().size() == 0);
 
-		Set<String> redirectUris = new HashSet<>();
+    Set<String> redirectUris = new HashSet<>();
 
-		res.setRedirectUris(redirectUris);
+    res.setRedirectUris(redirectUris);
 
-		assertTrue(res.getRedirectUris().size() == 0);
+    assertTrue(res.getRedirectUris().size() == 0);
 
-		redirectUris.add("url1");
+    redirectUris.add("url1");
 
-		res.setRedirectUris(redirectUris);
+    res.setRedirectUris(redirectUris);
 
-		assertTrue(res.getRedirectUris().size() == 1);
+    assertTrue(res.getRedirectUris().size() == 1);
 
-		// Scopes
+    // Scopes
 
-		res.setScopes(null, null);
+    res.setScopes(null, null);
 
-		// Scopes SPID
+    // Scopes SPID
 
-		Set<String> spidScopes = res.getScopes(OIDCProfile.SPID);
+    Set<String> spidScopes = res.getScopes(OIDCProfile.SPID);
 
-		res.setScopes(OIDCProfile.SPID, null);
+    res.setScopes(OIDCProfile.SPID, null);
 
-		assertEquals(spidScopes, res.getScopes(OIDCProfile.SPID));
+    assertEquals(spidScopes, res.getScopes(OIDCProfile.SPID));
 
-		Set<String> spidScopesNew = new HashSet<>();
+    Set<String> spidScopesNew = new HashSet<>();
 
-		res.setScopes(OIDCProfile.SPID, spidScopesNew);
+    res.setScopes(OIDCProfile.SPID, spidScopesNew);
 
-		assertEquals(spidScopes, res.getScopes(OIDCProfile.SPID));
+    assertEquals(spidScopes, res.getScopes(OIDCProfile.SPID));
 
-		spidScopesNew.add("test");
+    spidScopesNew.add("test");
 
-		res.setScopes(OIDCProfile.SPID, spidScopesNew);
+    res.setScopes(OIDCProfile.SPID, spidScopesNew);
 
-		assertTrue(res.getScopes(OIDCProfile.SPID).size() == 1);
+    assertTrue(res.getScopes(OIDCProfile.SPID).size() == 1);
 
-		// Scopes CIE
+    // Scopes CIE
 
-		Set<String> cieScopes = res.getScopes(OIDCProfile.CIE);
+    Set<String> cieScopes = res.getScopes(OIDCProfile.CIE);
 
-		res.setScopes(OIDCProfile.CIE, null);
+    res.setScopes(OIDCProfile.CIE, null);
 
-		assertEquals(cieScopes, res.getScopes(OIDCProfile.CIE));
+    assertEquals(cieScopes, res.getScopes(OIDCProfile.CIE));
 
-		Set<String> cieScopesNew = new HashSet<>();
+    Set<String> cieScopesNew = new HashSet<>();
 
-		res.setScopes(OIDCProfile.CIE, cieScopesNew);
+    res.setScopes(OIDCProfile.CIE, cieScopesNew);
 
-		assertEquals(cieScopes, res.getScopes(OIDCProfile.CIE));
+    assertEquals(cieScopes, res.getScopes(OIDCProfile.CIE));
 
-		cieScopesNew.add("test");
+    cieScopesNew.add("test");
 
-		res.setScopes(OIDCProfile.CIE, cieScopesNew);
+    res.setScopes(OIDCProfile.CIE, cieScopesNew);
 
-		assertTrue(res.getScopes(OIDCProfile.CIE).size() == 1);
+    assertTrue(res.getScopes(OIDCProfile.CIE).size() == 1);
 
-		// Trust Anchors
+    // Trust Anchors
 
-		res.setTrustAnchors(null);
+    res.setTrustAnchors(null);
 
-		assertTrue(res.getTrustAnchors().size() == 0);
+    assertTrue(res.getTrustAnchors().size() == 0);
 
-		Set<String> trustAnchors = new HashSet<>();
+    Set<String> trustAnchors = new HashSet<>();
 
-		res.setTrustAnchors(trustAnchors);
+    res.setTrustAnchors(trustAnchors);
 
-		assertTrue(res.getTrustAnchors().size() == 0);
+    assertTrue(res.getTrustAnchors().size() == 0);
 
-		trustAnchors.add("test");
+    trustAnchors.add("test");
 
-		res.setTrustAnchors(trustAnchors);
+    res.setTrustAnchors(trustAnchors);
 
-		assertTrue(res.getTrustAnchors().size() == 1);
+    assertTrue(res.getTrustAnchors().size() == 1);
 
-		// TrustMarks
+    // TrustMarks
 
-		String trustMarks = res.getTrustMarks();
+    String trustMarks = res.getTrustMarks();
 
-		res.setTrustMarks("");
+    res.setTrustMarks("");
 
-		assertEquals(trustMarks, res.getTrustMarks());
+    assertEquals(trustMarks, res.getTrustMarks());
 
-		res.setTrustMarks("test");
+    res.setTrustMarks("test");
 
-		assertEquals("test", res.getTrustMarks());
+    assertEquals("test", res.getTrustMarks());
 
-		// UserKeyClaim
+    // UserKeyClaim
 
-		String userkeyClaim = res.getUserKeyClaim();
+    String userkeyClaim = res.getUserKeyClaim();
 
-		res.setUserKeyClaim("");
+    res.setUserKeyClaim("");
 
-		assertEquals(userkeyClaim, res.getUserKeyClaim());
+    assertEquals(userkeyClaim, res.getUserKeyClaim());
 
-		res.setUserKeyClaim("test");
+    res.setUserKeyClaim("test");
 
-		assertEquals("test", res.getUserKeyClaim());
+    assertEquals("test", res.getUserKeyClaim());
 
-		// SPID providers
+    // SPID providers
 
-		res.setSPIDProviders(null);
+    res.setSPIDProviders(null);
 
-		assertTrue(res.getSPIDProviders().size() == 0);
+    assertTrue(res.getSPIDProviders().size() == 0);
 
-		Map<String, String> spidProviders = new HashMap<>();
+    Map<String, String> spidProviders = new HashMap<>();
 
-		res.setSPIDProviders(spidProviders);
+    res.setSPIDProviders(spidProviders);
 
-		assertTrue(res.getSPIDProviders().size() == 0);
+    assertTrue(res.getSPIDProviders().size() == 0);
 
-		spidProviders.put("one", "test");
-		spidProviders.put("two", null);
+    spidProviders.put("one", "test");
+    spidProviders.put("two", null);
 
-		res.setSPIDProviders(spidProviders);
+    res.setSPIDProviders(spidProviders);
 
-		assertTrue(res.getSPIDProviders().size() == 2);
+    assertTrue(res.getSPIDProviders().size() == 2);
 
-		// CIE providers
+    // CIE providers
 
-		res.setCIEProviders(null);
+    res.setCIEProviders(null);
 
-		assertTrue(res.getCIEProviders().size() == 0);
+    assertTrue(res.getCIEProviders().size() == 0);
 
-		Map<String, String> cieProviders = new HashMap<>();
+    Map<String, String> cieProviders = new HashMap<>();
 
-		res.setCIEProviders(cieProviders);
+    res.setCIEProviders(cieProviders);
 
-		assertTrue(res.getCIEProviders().size() == 0);
+    assertTrue(res.getCIEProviders().size() == 0);
 
-		cieProviders.put("one", "test");
-		cieProviders.put("two", null);
+    cieProviders.put("one", "test");
+    cieProviders.put("two", null);
 
-		res.setCIEProviders(cieProviders);
+    res.setCIEProviders(cieProviders);
 
-		assertTrue(res.getCIEProviders().size() == 2);
+    assertTrue(res.getCIEProviders().size() == 2);
 
-		// Providers
+    // Providers
 
-		assertTrue(res.getProviders(OIDCProfile.SPID).size() == 2);
-		assertTrue(res.getProviders(OIDCProfile.CIE).size() == 2);
-		assertTrue(res.getProviders(null).size() == 0);
+    assertTrue(res.getProviders(OIDCProfile.SPID).size() == 2);
+    assertTrue(res.getProviders(OIDCProfile.CIE).size() == 2);
+    assertTrue(res.getProviders(null).size() == 0);
 
-		//signing and encryption algorithms
-		res.setTokenEndpointAuthMethod("test");
+    //signing and encryption algorithms
+    res.setTokenEndpointAuthMethod("test");
 
-		assertEquals("test", res.getTokenEndpointAuthMethod());
+    assertEquals("test", res.getTokenEndpointAuthMethod());
 
-		res.setUserinfoEncryptedResponseEnc("test");
+    res.setUserinfoEncryptedResponseEnc("test");
 
-		assertEquals("test", res.getTokenEndpointAuthMethod());
+    assertEquals("test", res.getTokenEndpointAuthMethod());
 
-		res.setUserinfoSignedResponseAlg("test");
+    res.setUserinfoSignedResponseAlg("test");
 
-		assertEquals("test", res.getUserinfoSignedResponseAlg());
+    assertEquals("test", res.getUserinfoSignedResponseAlg());
 
-		res.setUserinfoEncryptedResponseAlg("test");
+    res.setUserinfoEncryptedResponseAlg("test");
 
-		assertEquals("test", res.getUserinfoEncryptedResponseAlg());
+    assertEquals("test", res.getUserinfoEncryptedResponseAlg());
 
-		res.setIdTokenSignedResponseAlg("test");
+    res.setIdTokenSignedResponseAlg("test");
 
-		assertEquals("test", res.getIdTokenSignedResponseAlg());
+    assertEquals("test", res.getIdTokenSignedResponseAlg());
 
-		//federation_entity metadata
-		res.setFederationResolveEndpoint("test");
+    //federation_entity metadata
+    res.setFederationResolveEndpoint("test");
 
-		assertEquals("test", res.getFederationResolveEndpoint());
+    assertEquals("test", res.getFederationResolveEndpoint());
 
-		res.setOrganizationName("test");
+    res.setOrganizationName("test");
 
-		assertEquals("test", res.getOrganizationName());
+    assertEquals("test", res.getOrganizationName());
 
-		res.setPolicyUri("test");
+    res.setPolicyUri("test");
 
-		assertEquals("test", res.getPolicyUri());
+    assertEquals("test", res.getPolicyUri());
 
-		res.setHomepageUri("test");
+    res.setHomepageUri("test");
 
-		assertEquals("test", res.getHomepageUri());
+    assertEquals("test", res.getHomepageUri());
 
-		res.setLogoUri("test");
+    res.setLogoUri("test");
 
-		assertEquals("test", res.getLogoUri());
+    assertEquals("test", res.getLogoUri());
 
-		// Federation Contacts
+    // Federation Contacts
 
-		res.setFederationContacts(null);
+    res.setFederationContacts(null);
 
-		assertTrue(res.getFederationContacts().size() == 0);
+    assertTrue(res.getFederationContacts().size() == 0);
 
-		Set<String> federationContacts = new HashSet<>();
+    Set<String> federationContacts = new HashSet<>();
 
-		res.setFederationContacts(federationContacts);
+    res.setFederationContacts(federationContacts);
 
-		assertTrue(res.getFederationContacts().size() == 0);
+    assertTrue(res.getFederationContacts().size() == 0);
 
-		federationContacts.add("test@test.com");
+    federationContacts.add("test@test.com");
 
-		res.setFederationContacts(federationContacts);
+    res.setFederationContacts(federationContacts);
 
-		assertTrue(res.getFederationContacts().size() == 1);
-	}
+    assertTrue(res.getFederationContacts().size() == 1);
+  }
 
-	@Test
-	public void testClass2a() {
-		boolean catched = false;
-		RelyingPartyOptions res = new RelyingPartyOptions();
+  @Test
+  public void testClass2a() {
+    boolean catched = false;
+    RelyingPartyOptions res = new RelyingPartyOptions();
 
-		try {
-			res.addRequestedClaim(null, null, SPIDClaimItem.NAME, null);
-		}
-		catch (Exception e) {
-			catched = true;
-		}
+    try {
+      res.addRequestedClaim(null, null, SPIDClaimItem.NAME, null);
+    } catch (Exception e) {
+      catched = true;
+    }
 
-		assertTrue(catched);
-	}
+    assertTrue(catched);
+  }
 
-	@Test
-	public void testClass2b() {
-		boolean catched = false;
-		RelyingPartyOptions res = new RelyingPartyOptions();
+  @Test
+  public void testClass2b() {
+    boolean catched = false;
+    RelyingPartyOptions res = new RelyingPartyOptions();
 
-		try {
-			res.addRequestedClaim(OIDCProfile.SPID, null, SPIDClaimItem.NAME, null);
-		}
-		catch (Exception e) {
-			catched = true;
-		}
+    try {
+      res.addRequestedClaim(OIDCProfile.SPID, null, SPIDClaimItem.NAME, null);
+    } catch (Exception e) {
+      catched = true;
+    }
 
-		assertTrue(catched);
-	}
+    assertTrue(catched);
+  }
 
-	@Test
-	public void testClass2c() {
-		boolean catched = false;
-		RelyingPartyOptions res = new RelyingPartyOptions();
+  @Test
+  public void testClass2c() {
+    boolean catched = false;
+    RelyingPartyOptions res = new RelyingPartyOptions();
 
-		try {
-			res.addRequestedClaim(OIDCProfile.CIE, null, SPIDClaimItem.NAME, null);
-		}
-		catch (Exception e) {
-			catched = true;
-		}
+    try {
+      res.addRequestedClaim(OIDCProfile.CIE, null, SPIDClaimItem.NAME, null);
+    } catch (Exception e) {
+      catched = true;
+    }
 
-		assertTrue(catched);
-	}
+    assertTrue(catched);
+  }
 
-	@Test
-	public void testClass3() {
-		RelyingPartyOptions res = new RelyingPartyOptions();
+  @Test
+  public void testClass3() {
+    RelyingPartyOptions res = new RelyingPartyOptions();
 
-		boolean catched = false;
-		try {
-			res.addRequestedClaim(
-				OIDCProfile.SPID, ClaimSection.ID_TOKEN, SPIDClaimItem.NAME, null);
-			res.addRequestedClaim(
-				OIDCProfile.SPID, ClaimSection.ID_TOKEN, SPIDClaimItem.FAMILY_NAME, null);
-		}
-		catch (Exception e) {
-			catched = true;
-		}
+    boolean catched = false;
+    try {
+      res.addRequestedClaim(
+        OIDCProfile.SPID, ClaimSection.ID_TOKEN, SPIDClaimItem.NAME, null);
+      res.addRequestedClaim(
+        OIDCProfile.SPID, ClaimSection.ID_TOKEN, SPIDClaimItem.FAMILY_NAME, null);
+    } catch (Exception e) {
+      catched = true;
+    }
 
-		assertFalse(catched);
+    assertFalse(catched);
 
-		JSONObject json = res.getRequestedClaimsAsJSON(OIDCProfile.SPID);
+    JSONObject json = res.getRequestedClaimsAsJSON(OIDCProfile.SPID);
 
-		assertFalse(json.isEmpty());
+    assertFalse(json.isEmpty());
 
-		json = res.getRequestedClaimsAsJSON(OIDCProfile.CIE);
+    json = res.getRequestedClaimsAsJSON(OIDCProfile.CIE);
 
-		assertTrue(json.isEmpty());
+    assertTrue(json.isEmpty());
 
-		catched = false;
+    catched = false;
 
-		try {
-			res.addRequestedClaim(
-				OIDCProfile.CIE, ClaimSection.ID_TOKEN, CIEClaimItem.FAMILY_NAME, null);
-		}
-		catch (Exception e) {
-			catched = true;
-		}
+    try {
+      res.addRequestedClaim(
+        OIDCProfile.CIE, ClaimSection.ID_TOKEN, CIEClaimItem.FAMILY_NAME, null);
+    } catch (Exception e) {
+      catched = true;
+    }
 
-		assertFalse(catched);
+    assertFalse(catched);
 
-		json = res.getRequestedClaimsAsJSON(OIDCProfile.SPID);
+    json = res.getRequestedClaimsAsJSON(OIDCProfile.SPID);
 
-		assertFalse(json.isEmpty());
-	}
+    assertFalse(json.isEmpty());
+  }
 
-	@Test
-	public void testClass4() {
-		RelyingPartyOptions res = new RelyingPartyOptions();
+  @Test
+  public void testClass4() {
+    RelyingPartyOptions res = new RelyingPartyOptions();
 
-		testValidateKO(res, "01", "no-default-trust-anchor");
+    testValidateKO(res, "01", "no-default-trust-anchor");
 
-		res.setDefaultTrustAnchor("testTA");
+    res.setDefaultTrustAnchor("testTA");
 
-		Map<String, String> spidProviders = new HashMap<>();
+    Map<String, String> spidProviders = new HashMap<>();
 
-		spidProviders.put("provider1", "TA_one");
-		spidProviders.put("provider2", "TA_two");
+    spidProviders.put("provider1", "TA_one");
+    spidProviders.put("provider2", "TA_two");
 
-		res.setSPIDProviders(spidProviders);
+    res.setSPIDProviders(spidProviders);
 
-		testValidateKO(res, "02", "invalid-spid-provider");
+    testValidateKO(res, "02", "invalid-spid-provider");
 
-		res.setTrustAnchors(ArrayUtil.asSet("TA_one", "TA_two"));
+    res.setTrustAnchors(ArrayUtil.asSet("TA_one", "TA_two"));
 
-		Map<String, String> cieProviders = new HashMap<>();
+    Map<String, String> cieProviders = new HashMap<>();
 
-		cieProviders.put("provider1", "testTA");
+    cieProviders.put("provider1", "testTA");
 
-		res.setCIEProviders(cieProviders);
+    res.setCIEProviders(cieProviders);
 
-		testValidateKO(res, "03", "invalid-cie-provider");
+    testValidateKO(res, "03", "invalid-cie-provider");
 
-		res.setTrustAnchors(ArrayUtil.asSet("testTA", "TA_one", "TA_two"));
+    res.setTrustAnchors(ArrayUtil.asSet("testTA", "TA_one", "TA_two"));
 
-		testValidateKO(res, "04", "no-client-id");
+    testValidateKO(res, "04", "no-client-id");
 
-		res.setClientId("testClientId");
+    res.setClientId("testClientId");
 
-		res.setScopes(OIDCProfile.SPID, ArrayUtil.asSet("open_id", "test"));
+    res.setScopes(OIDCProfile.SPID, ArrayUtil.asSet("open_id", "test"));
 
-		testValidateKO(res, "05", "unsupported-spid-scope");
+    testValidateKO(res, "05", "unsupported-spid-scope");
 
-		res.setScopes(OIDCProfile.SPID, new HashSet<>());
+    res.setScopes(OIDCProfile.SPID, new HashSet<>());
 
-		res.setScopes(OIDCProfile.CIE, ArrayUtil.asSet("open_id", "test"));
+    res.setScopes(OIDCProfile.CIE, ArrayUtil.asSet("open_id", "test"));
 
-		testValidateKO(res, "06", "unsupported-cie-scope");
+    testValidateKO(res, "06", "unsupported-cie-scope");
 
-		res.setScopes(OIDCProfile.CIE, new HashSet<>());
+    res.setScopes(OIDCProfile.CIE, new HashSet<>());
 
-		testValidateKO(res, "07", "no-redirect-uris");
+    testValidateKO(res, "07", "no-redirect-uris");
 
-		res.setRedirectUris(ArrayUtil.asSet("testRedirect"));
+    res.setRedirectUris(ArrayUtil.asSet("testRedirect"));
 
-		testValidateOK(res, "08");
+    testValidateOK(res, "08");
 
-		res.setUserKeyClaim("test");
+    res.setUserKeyClaim("test");
 
-		testValidateKO(res, "09", "invalid-user-key-claim-for-spid");
+    testValidateKO(res, "09", "invalid-user-key-claim-for-spid");
 
-		try {
-			res.addRequestedClaim(
-				OIDCProfile.SPID, ClaimSection.ID_TOKEN, SPIDClaimItem.FISCAL_NUMBER, true);
-		}
-		catch (Exception e) {
-			// ignore
-		}
+    try {
+      res.addRequestedClaim(
+        OIDCProfile.SPID, ClaimSection.ID_TOKEN, SPIDClaimItem.FISCAL_NUMBER, true);
+    } catch (Exception e) {
+      // ignore
+    }
 
-		res.setUserKeyClaim("fiscal_number");
+    res.setUserKeyClaim("fiscal_number");
 
-		testValidateKO(res, "10", "invalid-user-key-claim-for-cie");
-	}
+    testValidateKO(res, "10", "invalid-user-key-claim-for-cie");
+  }
 
-	protected void testValidateKO(
-		RelyingPartyOptions options, String message, String prefix) {
+  protected void testValidateKO(
+    RelyingPartyOptions options, String message, String prefix) {
 
-		boolean catched = false;
-		String errorMsg = "";
+    boolean catched = false;
+    String errorMsg = "";
 
-		try {
-			options.validate();
-		}
-		catch (Exception e) {
-			catched = true;
-			errorMsg = e.getMessage();
-		}
+    try {
+      options.validate();
+    } catch (Exception e) {
+      catched = true;
+      errorMsg = e.getMessage();
+    }
 
-		//System.out.println("catched:" + catched + " msg:" + errorMsg);
+    //System.out.println("catched:" + catched + " msg:" + errorMsg);
 
-		assertTrue(message, catched);
-		assertTrue(message, errorMsg.startsWith(prefix));
-	}
+    assertTrue(message, catched);
+    assertTrue(message, errorMsg.startsWith(prefix));
+  }
 
-	@SuppressWarnings("unused")
-	protected void testValidateOK(RelyingPartyOptions options, String message) {
-		boolean catched = false;
-		String errorMsg = "";
+  @SuppressWarnings("unused")
+  protected void testValidateOK(RelyingPartyOptions options, String message) {
+    boolean catched = false;
+    String errorMsg = "";
 
-		try {
-			options.validate();
-		}
-		catch (Exception e) {
-			catched = true;
-			errorMsg = e.getMessage();
-		}
+    try {
+      options.validate();
+    } catch (Exception e) {
+      catched = true;
+      errorMsg = e.getMessage();
+    }
 
-		assertFalse(message, catched);
-	}
+    assertFalse(message, catched);
+  }
 
 }

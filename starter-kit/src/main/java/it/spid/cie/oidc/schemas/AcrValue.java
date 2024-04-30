@@ -4,57 +4,57 @@ import it.spid.cie.oidc.exception.OIDCException;
 
 public enum AcrValue {
 
-	L1("https://www.spid.gov.it/SpidL1"),
-	L2("https://www.spid.gov.it/SpidL2"),
-	L3("https://www.spid.gov.it/SpidL3");
+  L1("https://www.spid.gov.it/SpidL1"),
+  L2("https://www.spid.gov.it/SpidL2"),
+  L3("https://www.spid.gov.it/SpidL3");
 
-	private final String value;
+  private final String value;
 
-	/**
-	 * Identify the AcrValue by its {@code value} or {@code name}. While value is strictly
-	 * checked, name is evalueated case insensitive.
-	 *
-	 * @param value value to search
-	 * @return found element, or null
-	 */
-	public static AcrValue parse(String value) {
-		if (value != null) {
-			for (AcrValue elem : AcrValue.values()) {
-				if (value.equals(elem.value())) {
-					return elem;
-				}
-			}
-			for (AcrValue elem : AcrValue.values()) {
-				if (value.equalsIgnoreCase(elem.name())) {
-					return elem;
-				}
-			}
-		}
+  private AcrValue(String value) {
+    this.value = value;
+  }
 
-		return null;
-	}
+  /**
+   * Identify the AcrValue by its {@code value} or {@code name}. While value is strictly
+   * checked, name is evalueated case insensitive.
+   *
+   * @param value value to search
+   * @return found element, or null
+   */
+  public static AcrValue parse(String value) {
+    if (value != null) {
+      for (AcrValue elem : AcrValue.values()) {
+        if (value.equals(elem.value())) {
+          return elem;
+        }
+      }
+      for (AcrValue elem : AcrValue.values()) {
+        if (value.equalsIgnoreCase(elem.name())) {
+          return elem;
+        }
+      }
+    }
 
-	public static AcrValue parse(String value, boolean strict) throws OIDCException {
-		AcrValue result = parse(value);
+    return null;
+  }
 
-		if (result == null && strict) {
-			throw new OIDCException("Invalid value: " + value);
-		}
+  public static AcrValue parse(String value, boolean strict) throws OIDCException {
+    AcrValue result = parse(value);
 
-		return result;
-	}
+    if (result == null && strict) {
+      throw new OIDCException("Invalid value: " + value);
+    }
 
-	@Override
-	public String toString() {
-		return value();
-	}
+    return result;
+  }
 
-	public String value() {
-		return value;
-	}
+  @Override
+  public String toString() {
+    return value();
+  }
 
-	private AcrValue(String value) {
-		this.value = value;
-	}
+  public String value() {
+    return value;
+  }
 
 }

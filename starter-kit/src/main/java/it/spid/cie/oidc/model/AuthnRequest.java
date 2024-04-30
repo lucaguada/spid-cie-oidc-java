@@ -2,104 +2,104 @@ package it.spid.cie.oidc.model;
 
 public class AuthnRequest extends BaseModel {
 
-	private String clientId;
-	private String state;
-	private String endpoint;
-	private String data;
-	private boolean successful;
-	private String providerConfiguration;
-	private String provider;
-	private String providerId;
-	private String providerJwks;
+  private String clientId;
+  private String state;
+  private String endpoint;
+  private String data;
+  private boolean successful;
+  private String providerConfiguration;
+  private String provider;
+  private String providerId;
+  private String providerJwks;
 
-	public String getClientId() {
-		return clientId;
-	}
+  public String getClientId() {
+    return clientId;
+  }
 
-	public String getEndpoint() {
-		return endpoint;
-	}
+  public AuthnRequest setClientId(String clientId) {
+    this.clientId = clientId;
 
-	public String getData() {
-		return data;
-	}
+    return this;
+  }
 
-	public String getProvider() {
-		return provider;
-	}
+  public String getEndpoint() {
+    return endpoint;
+  }
 
-	public String getProviderConfiguration() {
-		return providerConfiguration;
-	}
+  public AuthnRequest setEndpoint(String endpoint) {
+    this.endpoint = endpoint;
 
-	public String getProviderId() {
-		return providerId;
-	}
+    return this;
+  }
 
-	public String getProviderJwks() {
-		return providerJwks;
-	}
+  public String getData() {
+    return data;
+  }
 
-	public String getState() {
-		return state;
-	}
+  public AuthnRequest setData(String data) {
+    this.data = data;
 
-	public boolean isSuccessful() {
-		return successful;
-	}
+    return this;
+  }
 
-	public AuthnRequest setClientId(String clientId) {
-		this.clientId = clientId;
+  public String getProvider() {
+    return provider;
+  }
 
-		return this;
-	}
+  public AuthnRequest setProvider(String provider) {
+    this.provider = provider;
 
-	public AuthnRequest setEndpoint(String endpoint) {
-		this.endpoint = endpoint;
+    return this;
+  }
 
-		return this;
-	}
+  public String getProviderConfiguration() {
+    return providerConfiguration;
+  }
 
-	public AuthnRequest setData(String data) {
-		this.data = data;
+  public AuthnRequest setProviderConfiguration(String providerConfiguration) {
+    this.providerConfiguration = providerConfiguration;
 
-		return this;
-	}
+    return this;
+  }
 
-	public AuthnRequest setProvider(String provider) {
-		this.provider = provider;
+  public String getProviderId() {
+    return providerId;
+  }
 
-		return this;
-	}
+  public AuthnRequest setProviderId(String providerId) {
+    this.providerId = providerId;
 
-	public AuthnRequest setProviderConfiguration(String providerConfiguration) {
-		this.providerConfiguration = providerConfiguration;
+    return this;
+  }
 
-		return this;
-	}
+  public String getProviderJwks() {
+    return providerJwks;
+  }
 
-	public AuthnRequest setProviderId(String providerId) {
-		this.providerId = providerId;
+  public AuthnRequest setProviderJwks(String providerJwks) {
+    this.providerJwks = providerJwks;
 
-		return this;
-	}
+    return this;
+  }
 
-	public AuthnRequest setProviderJwks(String providerJwks) {
-		this.providerJwks = providerJwks;
+  public String getState() {
+    return state;
+  }
 
-		return this;
-	}
+  public AuthnRequest setState(String state) {
+    this.state = state;
 
-	public AuthnRequest setState(String state) {
-		this.state = state;
+    return this;
+  }
 
-		return this;
-	}
+  public boolean isSuccessful() {
+    return successful;
+  }
 
-	public AuthnRequest setSuccessful(boolean successful) {
-		this.successful = successful;
+  public AuthnRequest setSuccessful(boolean successful) {
+    this.successful = successful;
 
-		return this;
-	}
+    return this;
+  }
 
 }

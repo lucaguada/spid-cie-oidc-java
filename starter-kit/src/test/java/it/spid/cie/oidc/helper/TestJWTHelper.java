@@ -1,643 +1,597 @@
 package it.spid.cie.oidc.helper;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import com.nimbusds.jose.*;
+import com.nimbusds.jose.crypto.RSASSASigner;
+import com.nimbusds.jose.jwk.*;
+import com.nimbusds.jose.jwk.gen.ECKeyGenerator;
+import com.nimbusds.jose.jwk.gen.OctetSequenceKeyGenerator;
+import it.spid.cie.oidc.config.RelyingPartyOptions;
+import it.spid.cie.oidc.test.util.TestUtils;
+import it.spid.cie.oidc.util.ArrayUtil;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.junit.Test;
-
-import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jose.JWSHeader;
-import com.nimbusds.jose.JWSObject;
-import com.nimbusds.jose.JWSSigner;
-import com.nimbusds.jose.Payload;
-import com.nimbusds.jose.crypto.RSASSASigner;
-import com.nimbusds.jose.jwk.Curve;
-import com.nimbusds.jose.jwk.ECKey;
-import com.nimbusds.jose.jwk.JWK;
-import com.nimbusds.jose.jwk.JWKSet;
-import com.nimbusds.jose.jwk.KeyType;
-import com.nimbusds.jose.jwk.KeyUse;
-import com.nimbusds.jose.jwk.OctetSequenceKey;
-import com.nimbusds.jose.jwk.RSAKey;
-import com.nimbusds.jose.jwk.gen.ECKeyGenerator;
-import com.nimbusds.jose.jwk.gen.OctetSequenceKeyGenerator;
-
-import it.spid.cie.oidc.config.RelyingPartyOptions;
-import it.spid.cie.oidc.test.util.TestUtils;
-import it.spid.cie.oidc.util.ArrayUtil;
+import static org.junit.Assert.*;
 
 public class TestJWTHelper {
 
-	private static String TRUST_ANCHOR = "http://127.0.0.1:18000/";
-	private static String SPID_PROVIDER = "http://127.0.0.1:18000/oidc/op/";
-	private static String RELYING_PARTY = "http://127.0.0.1:18080/oidc/rp/";
+  private static String TRUST_ANCHOR = "http://127.0.0.1:18000/";
+  private static String SPID_PROVIDER = "http://127.0.0.1:18000/oidc/op/";
+  private static String RELYING_PARTY = "http://127.0.0.1:18080/oidc/rp/";
 
-	@Test
-	public void testClass1() {
-		RelyingPartyOptions options = new RelyingPartyOptions();
+  private static JWKSet createJWKSet() throws Exception {
+    RSAKey rsaKey1 = JWTHelper.createRSAKey(JWSAlgorithm.RS256, KeyUse.SIGNATURE);
+    //RSAKey rsaKey2 = JWTHelper.createRSAKey(null, KeyUse.ENCRYPTION);
 
-		JWTHelper helper = new JWTHelper(options);
+    return new JWKSet(Arrays.asList(rsaKey1));
+  }
 
-		assertNotNull(helper);
-	}
+  private static String createJWS(JSONObject payload, JSONObject jwks)
+    throws Exception {
 
-	@Test
-	public void testClass2() {
-		RSAKey rsaKey = null;
-		boolean catched = false;
+    JWKSet jwkSet = JWKSet.parse(jwks.toString());
 
-		try {
-			rsaKey = JWTHelper.createRSAKey(null, KeyUse.SIGNATURE);
-		}
-		catch (Exception e) {
-			catched = true;
-		}
+    JWK jwk = JWTHelper.getFirstJWK(jwkSet);
 
-		assertFalse(catched);
-		assertTrue(rsaKey.getKeyType().equals(KeyType.RSA));
-	}
+    RSAKey rsaKey = (RSAKey) jwk;
 
-	@Test
-	public void testClass3() {
-		String test = "sample-value";
+    JWSSigner signer = new RSASSASigner(rsaKey);
+    JWSAlgorithm alg = JWSAlgorithm.RS256;
 
-		String encoded = encode64(test);
+    // Prepare JWS object with the payload
 
-		assertEquals(test, JWTHelper.decodeBase64(encoded));
-	}
+    JWSObject jwsObject = new JWSObject(
+      new JWSHeader.Builder(alg).keyID(jwk.getKeyID()).build(),
+      new Payload(payload.toString()));
 
-	@Test
-	public void testClass4() {
-		JSONObject jsonHeader = new JSONObject()
-			.put("one", "one");
-		JSONObject jsonPayload = new JSONObject()
-			.put("two", "two");
+    // Compute the signature
+    jwsObject.sign(signer);
 
-		StringBuilder sb1 = new StringBuilder();
+    // Serialize to compact form
+    return jwsObject.serialize();
+  }
 
-		sb1.append(encode64(jsonHeader.toString()));
+  private static ECKey createECKey(KeyUse use) throws Exception {
+    return new ECKeyGenerator(Curve.P_256)
+      .keyUse(use)
+      .keyIDFromThumbprint(true)
+      .generate();
+  }
 
-		boolean catched = false;
+  private static OctetSequenceKey createOSKey(KeyUse use) throws Exception {
+    return new OctetSequenceKeyGenerator(256)
+      .algorithm(JWSAlgorithm.HS256)
+      .keyUse(use)
+      .keyIDFromThumbprint(true)
+      .generate();
+  }
 
-		try {
-			JWTHelper.fastParse(sb1.toString());
-		}
-		catch(Exception e) {
-			catched = true;
-		}
+  @Test
+  public void testClass1() {
+    RelyingPartyOptions options = new RelyingPartyOptions();
 
-		assertTrue(catched);
+    JWTHelper helper = new JWTHelper(options);
 
-		StringBuilder sb2 = new StringBuilder();
+    assertNotNull(helper);
+  }
 
-		sb2.append(encode64(jsonHeader.toString()));
-		sb2.append(".");
-		sb2.append(encode64("no-json"));
+  @Test
+  public void testClass2() {
+    RSAKey rsaKey = null;
+    boolean catched = false;
 
-		catched = false;
+    try {
+      rsaKey = JWTHelper.createRSAKey(null, KeyUse.SIGNATURE);
+    } catch (Exception e) {
+      catched = true;
+    }
 
-		try {
-			JWTHelper.fastParse(sb2.toString());
-		}
-		catch(Exception e) {
-			catched = true;
-		}
+    assertFalse(catched);
+    assertTrue(rsaKey.getKeyType().equals(KeyType.RSA));
+  }
 
-		assertTrue(catched);
+  @Test
+  public void testClass3() {
+    String test = "sample-value";
 
-		StringBuilder sb3 = new StringBuilder();
+    String encoded = encode64(test);
 
-		sb3.append(encode64(jsonHeader.toString()));
-		sb3.append(".");
-		sb3.append(encode64(jsonPayload.toString()));
+    assertEquals(test, JWTHelper.decodeBase64(encoded));
+  }
 
-		catched = false;
+  @Test
+  public void testClass4() {
+    JSONObject jsonHeader = new JSONObject()
+      .put("one", "one");
+    JSONObject jsonPayload = new JSONObject()
+      .put("two", "two");
 
-		try {
-			JWTHelper.fastParse(sb3.toString());
-		}
-		catch(Exception e) {
-			catched = true;
-		}
+    StringBuilder sb1 = new StringBuilder();
 
-		assertFalse(catched);
-	}
+    sb1.append(encode64(jsonHeader.toString()));
 
-	@Test
-	public void test_createRSAKey() {
-		boolean catched = false;
+    boolean catched = false;
 
-		try {
-			JWTHelper.createRSAKey(JWSAlgorithm.ES256, KeyUse.SIGNATURE);
-		}
-		catch(Exception e) {
-			catched = true;
-		}
-
-		assertFalse(catched);
-	}
-
-	@Test
-	public void test_fastParseHeader() {
-		boolean catched = false;
-		JSONObject header = null;
-
-		try {
-			JWKSet jwkSet = createJWKSet();
-
-			JSONObject jwks = new JSONObject(jwkSet.toJSONObject(false));
-			JSONObject payload = new JSONObject().put("sub", "sub");
-
-			String jws = createJWS(payload, jwks);
-
-			header = JWTHelper.fastParseHeader(jws);
-		}
-		catch(Exception e) {
-			e.printStackTrace();
-			catched = true;
-		}
+    try {
+      JWTHelper.fastParse(sb1.toString());
+    } catch (Exception e) {
+      catched = true;
+    }
 
-		assertFalse(catched);
-		assertFalse(header.isEmpty());
-	}
+    assertTrue(catched);
 
-	@Test
-	public void test_getFirstJWK() {
-		boolean catched = false;
+    StringBuilder sb2 = new StringBuilder();
 
-		try {
-			JWTHelper.getFirstJWK(null);
-		}
-		catch(Exception e) {
-			catched = true;
-		}
+    sb2.append(encode64(jsonHeader.toString()));
+    sb2.append(".");
+    sb2.append(encode64("no-json"));
 
-		assertTrue(catched);
-
-		catched = false;
+    catched = false;
 
-		try {
-			JWTHelper.getFirstJWK(new JWKSet());
-		}
-		catch(Exception e) {
-			catched = true;
-		}
+    try {
+      JWTHelper.fastParse(sb2.toString());
+    } catch (Exception e) {
+      catched = true;
+    }
 
-		assertTrue(catched);
-	}
-
-	@Test
-	public void test_getJWKFromJWT() {
-		boolean catched = false;
-		JWK jwk = null;
+    assertTrue(catched);
 
-		try {
-			JWKSet jwkSet = createJWKSet();
-
-			JSONObject jwks = new JSONObject(jwkSet.toJSONObject(false));
-			JSONObject payload = new JSONObject().put("sub", "sub");
-
-			String jws = createJWS(payload, jwks);
-
-			jwk = JWTHelper.getJWKFromJWT(jws, jwkSet);
-		}
-		catch(Exception e) {
-			catched = true;
-		}
+    StringBuilder sb3 = new StringBuilder();
 
-		assertFalse(catched);
-		assertNotNull(jwk);
-	}
+    sb3.append(encode64(jsonHeader.toString()));
+    sb3.append(".");
+    sb3.append(encode64(jsonPayload.toString()));
 
-	@Test
-	public void test_getJWKSetAsJSONArray() {
-		boolean catched = false;
-		JSONArray jsonArray = null;
+    catched = false;
 
-		try {
-			RSAKey rsaKey1 = JWTHelper.createRSAKey(null, KeyUse.SIGNATURE);
-			RSAKey rsaKey2 = JWTHelper.createRSAKey(null, KeyUse.ENCRYPTION);
+    try {
+      JWTHelper.fastParse(sb3.toString());
+    } catch (Exception e) {
+      catched = true;
+    }
 
-			JWKSet jwkSet = new JWKSet(Arrays.asList(rsaKey1, rsaKey2));
+    assertFalse(catched);
+  }
 
-			jsonArray = JWTHelper.getJWKSetAsJSONArray(jwkSet, true);
-		}
-		catch(Exception e) {
-			catched = true;
-		}
+  @Test
+  public void test_createRSAKey() {
+    boolean catched = false;
 
-		assertFalse(catched);
-		assertTrue(jsonArray.length() == 2);
-		assertFalse(jsonArray.getJSONObject(0).has("use"));
-
-		catched = false;
-		jsonArray = null;
+    try {
+      JWTHelper.createRSAKey(JWSAlgorithm.ES256, KeyUse.SIGNATURE);
+    } catch (Exception e) {
+      catched = true;
+    }
 
-		try {
-			RSAKey rsaKey = JWTHelper.createRSAKey(null, KeyUse.SIGNATURE);
-			ECKey ecKey = createECKey(KeyUse.ENCRYPTION);
+    assertFalse(catched);
+  }
 
-			JWKSet jwkSet = new JWKSet(Arrays.asList(rsaKey, ecKey));
+  @Test
+  public void test_fastParseHeader() {
+    boolean catched = false;
+    JSONObject header = null;
 
-			jsonArray = JWTHelper.getJWKSetAsJSONArray(jwkSet, false);
-		}
-		catch(Exception e) {
-			catched = true;
-		}
+    try {
+      JWKSet jwkSet = createJWKSet();
 
-		assertFalse(catched);
-		assertTrue(jsonArray.length() == 2);
-		assertTrue(jsonArray.getJSONObject(0).has("use"));
+      JSONObject jwks = new JSONObject(jwkSet.toJSONObject(false));
+      JSONObject payload = new JSONObject().put("sub", "sub");
 
-		catched = false;
-		jsonArray = null;
+      String jws = createJWS(payload, jwks);
 
-		try {
-			RSAKey rsaKey = JWTHelper.createRSAKey(null, KeyUse.SIGNATURE);
-			ECKey ecKey = createECKey(KeyUse.ENCRYPTION);
+      header = JWTHelper.fastParseHeader(jws);
+    } catch (Exception e) {
+      e.printStackTrace();
+      catched = true;
+    }
 
-			JWKSet jwkSet = new JWKSet(Arrays.asList(rsaKey, ecKey));
+    assertFalse(catched);
+    assertFalse(header.isEmpty());
+  }
 
-			jsonArray = JWTHelper.getJWKSetAsJSONArray(jwkSet, true, false);
-		}
-		catch(Exception e) {
-			catched = true;
-		}
+  @Test
+  public void test_getFirstJWK() {
+    boolean catched = false;
 
-		assertFalse(catched);
-		assertTrue(jsonArray.length() == 2);
-		assertTrue(jsonArray.getJSONObject(0).has("use"));
+    try {
+      JWTHelper.getFirstJWK(null);
+    } catch (Exception e) {
+      catched = true;
+    }
 
-		catched = false;
-		jsonArray = null;
+    assertTrue(catched);
 
-		try {
-			JWK osKey = createOSKey(KeyUse.SIGNATURE);
+    catched = false;
 
-			JWKSet jwkSet = new JWKSet(Arrays.asList(osKey));
+    try {
+      JWTHelper.getFirstJWK(new JWKSet());
+    } catch (Exception e) {
+      catched = true;
+    }
 
-			jsonArray = JWTHelper.getJWKSetAsJSONArray(jwkSet, true, false);
-		}
-		catch(Exception e) {
-			catched = true;
-		}
+    assertTrue(catched);
+  }
 
-		assertFalse(catched);
-		assertTrue(jsonArray.isEmpty());
-	}
+  @Test
+  public void test_getJWKFromJWT() {
+    boolean catched = false;
+    JWK jwk = null;
 
-	@Test
-	public void test_getJWKSetFromJSON1() {
-		boolean catched = false;
+    try {
+      JWKSet jwkSet = createJWKSet();
 
-		try {
-			JWTHelper.getJWKSetFromJSON("{invalid-json}");
-		}
-		catch(Exception e) {
-			catched = true;
-		}
+      JSONObject jwks = new JSONObject(jwkSet.toJSONObject(false));
+      JSONObject payload = new JSONObject().put("sub", "sub");
 
-		assertTrue(catched);
+      String jws = createJWS(payload, jwks);
 
-		catched = false;
-		JWKSet res = null;
+      jwk = JWTHelper.getJWKFromJWT(jws, jwkSet);
+    } catch (Exception e) {
+      catched = true;
+    }
 
-		try {
-			RSAKey rsaKey1 = JWTHelper.createRSAKey(null, KeyUse.SIGNATURE);
-			RSAKey rsaKey2 = JWTHelper.createRSAKey(null, KeyUse.ENCRYPTION);
+    assertFalse(catched);
+    assertNotNull(jwk);
+  }
 
-			JWKSet jwkSet = new JWKSet(Arrays.asList(rsaKey1, rsaKey2));
+  @Test
+  public void test_getJWKSetAsJSONArray() {
+    boolean catched = false;
+    JSONArray jsonArray = null;
 
-			String s = jwkSet.toString();
+    try {
+      RSAKey rsaKey1 = JWTHelper.createRSAKey(null, KeyUse.SIGNATURE);
+      RSAKey rsaKey2 = JWTHelper.createRSAKey(null, KeyUse.ENCRYPTION);
 
-			res = JWTHelper.getJWKSetFromJSON(s);
-		}
-		catch(Exception e) {
-			catched = true;
-		}
+      JWKSet jwkSet = new JWKSet(Arrays.asList(rsaKey1, rsaKey2));
 
-		assertFalse(catched);
-		assertTrue(res.getKeys().size() == 2);
-	}
+      jsonArray = JWTHelper.getJWKSetAsJSONArray(jwkSet, true);
+    } catch (Exception e) {
+      catched = true;
+    }
 
-	@Test
-	public void test_getJWKSetFromJSON2() {
-		boolean catched = false;
+    assertFalse(catched);
+    assertTrue(jsonArray.length() == 2);
+    assertFalse(jsonArray.getJSONObject(0).has("use"));
 
-		try {
-			JWTHelper.getJWKSetFromJSON(new JSONObject());
-		}
-		catch(Exception e) {
-			catched = true;
-		}
+    catched = false;
+    jsonArray = null;
 
-		assertTrue(catched);
+    try {
+      RSAKey rsaKey = JWTHelper.createRSAKey(null, KeyUse.SIGNATURE);
+      ECKey ecKey = createECKey(KeyUse.ENCRYPTION);
 
-		// Good path is already tested implicitly
-	}
+      JWKSet jwkSet = new JWKSet(Arrays.asList(rsaKey, ecKey));
 
-	@Test
-	public void test_getJWKSetFromJWK() {
-		boolean catched = false;
+      jsonArray = JWTHelper.getJWKSetAsJSONArray(jwkSet, false);
+    } catch (Exception e) {
+      catched = true;
+    }
 
-		try {
-			JWTHelper.getJWKSetFromJWK("{invalid-json}");
-		}
-		catch(Exception e) {
-			catched = true;
-		}
+    assertFalse(catched);
+    assertTrue(jsonArray.length() == 2);
+    assertTrue(jsonArray.getJSONObject(0).has("use"));
 
-		assertTrue(catched);
+    catched = false;
+    jsonArray = null;
 
-		// Good path is already tested implicitly
-	}
+    try {
+      RSAKey rsaKey = JWTHelper.createRSAKey(null, KeyUse.SIGNATURE);
+      ECKey ecKey = createECKey(KeyUse.ENCRYPTION);
 
-	@Test
-	public void test_getJWKSetFromJWT() {
-		boolean catched = false;
+      JWKSet jwkSet = new JWKSet(Arrays.asList(rsaKey, ecKey));
 
-		try {
-			JWTHelper.getJWKSetFromJWT("{invalid-json}");
-		}
-		catch(Exception e) {
-			catched = true;
-		}
+      jsonArray = JWTHelper.getJWKSetAsJSONArray(jwkSet, true, false);
+    } catch (Exception e) {
+      catched = true;
+    }
 
-		assertTrue(catched);
+    assertFalse(catched);
+    assertTrue(jsonArray.length() == 2);
+    assertTrue(jsonArray.getJSONObject(0).has("use"));
 
-		// Good path is already tested implicitly
-	}
+    catched = false;
+    jsonArray = null;
 
-	@Test
-	public void test_getMetadataJWKSet() {
-		boolean catched = false;
+    try {
+      JWK osKey = createOSKey(KeyUse.SIGNATURE);
 
-		try {
-			JWTHelper.getMetadataJWKSet(new JSONObject());
-		}
-		catch(Exception e) {
-			catched = true;
-		}
+      JWKSet jwkSet = new JWKSet(Arrays.asList(osKey));
 
-		assertTrue(catched);
+      jsonArray = JWTHelper.getJWKSetAsJSONArray(jwkSet, true, false);
+    } catch (Exception e) {
+      catched = true;
+    }
 
-		catched = false;
+    assertFalse(catched);
+    assertTrue(jsonArray.isEmpty());
+  }
 
-		try {
-			JSONObject metadata = new JSONObject().put("jwks", "ko");
+  @Test
+  public void test_getJWKSetFromJSON1() {
+    boolean catched = false;
 
-			JWTHelper.getMetadataJWKSet(metadata);
-		}
-		catch(Exception e) {
-			catched = true;
-		}
+    try {
+      JWTHelper.getJWKSetFromJSON("{invalid-json}");
+    } catch (Exception e) {
+      catched = true;
+    }
 
-		assertTrue(catched);
+    assertTrue(catched);
 
-		catched = false;
+    catched = false;
+    JWKSet res = null;
 
-		try {
-			JSONObject metadata = new JSONObject().put("jwks_uri", "ko");
+    try {
+      RSAKey rsaKey1 = JWTHelper.createRSAKey(null, KeyUse.SIGNATURE);
+      RSAKey rsaKey2 = JWTHelper.createRSAKey(null, KeyUse.ENCRYPTION);
 
-			JWTHelper.getMetadataJWKSet(metadata);
-		}
-		catch(Exception e) {
-			catched = true;
-		}
+      JWKSet jwkSet = new JWKSet(Arrays.asList(rsaKey1, rsaKey2));
 
-		assertTrue(catched);
+      String s = jwkSet.toString();
 
-		// Good path is already tested implicitly
-	}
+      res = JWTHelper.getJWKSetFromJSON(s);
+    } catch (Exception e) {
+      catched = true;
+    }
 
-	@Test
-	public void test_parseRSAKey() {
-		boolean catched = false;
+    assertFalse(catched);
+    assertTrue(res.getKeys().size() == 2);
+  }
 
-		try {
-			JWTHelper.parseRSAKey("{invalid-json}");
-		}
-		catch(Exception e) {
-			catched = true;
-		}
+  @Test
+  public void test_getJWKSetFromJSON2() {
+    boolean catched = false;
 
-		assertTrue(catched);
+    try {
+      JWTHelper.getJWKSetFromJSON(new JSONObject());
+    } catch (Exception e) {
+      catched = true;
+    }
 
-		// Good path is already tested implicitly
-	}
+    assertTrue(catched);
 
-	@Test
-	public void test_createJWS() {
-		JSONObject payload = new JSONObject().put("test", "test");
+    // Good path is already tested implicitly
+  }
 
-		boolean catched = false;
-		JWTHelper helper = null;
+  @Test
+  public void test_getJWKSetFromJWK() {
+    boolean catched = false;
 
-		try {
-			RelyingPartyOptions options = getOptions();
+    try {
+      JWTHelper.getJWKSetFromJWK("{invalid-json}");
+    } catch (Exception e) {
+      catched = true;
+    }
 
-			helper = new JWTHelper(options);
-		}
-		catch(Exception e) {
-			catched = true;
-		}
+    assertTrue(catched);
 
-		assertFalse(catched);
-		assertNotNull(helper);
+    // Good path is already tested implicitly
+  }
 
-		catched = false;
-		String res = null;
+  @Test
+  public void test_getJWKSetFromJWT() {
+    boolean catched = false;
 
-		try {
-			ECKey ecKey = createECKey(KeyUse.ENCRYPTION);
+    try {
+      JWTHelper.getJWKSetFromJWT("{invalid-json}");
+    } catch (Exception e) {
+      catched = true;
+    }
 
-			JWKSet jwkSet = new JWKSet(Arrays.asList(ecKey));
+    assertTrue(catched);
 
-			res = helper.createJWS(payload, jwkSet);
-		}
-		catch(Exception e) {
-			catched = true;
-		}
+    // Good path is already tested implicitly
+  }
 
-		assertTrue(catched); // Default signer make fail
+  @Test
+  public void test_getMetadataJWKSet() {
+    boolean catched = false;
 
-		// Good path is already tested implicitly
-	}
+    try {
+      JWTHelper.getMetadataJWKSet(new JSONObject());
+    } catch (Exception e) {
+      catched = true;
+    }
 
-	@Test
-	public void test_decryptJWE() {
-		boolean catched = false;
-		JWTHelper helper = null;
+    assertTrue(catched);
 
-		try {
-			RelyingPartyOptions options = getOptions();
+    catched = false;
 
-			helper = new JWTHelper(options);
-		}
-		catch(Exception e) {
-			catched = true;
-		}
+    try {
+      JSONObject metadata = new JSONObject().put("jwks", "ko");
 
-		assertFalse(catched);
-		assertNotNull(helper);
+      JWTHelper.getMetadataJWKSet(metadata);
+    } catch (Exception e) {
+      catched = true;
+    }
 
-		catched = false;
+    assertTrue(catched);
 
-		try {
-			helper.decryptJWE("invalid-jwe", null);
-		}
-		catch(Exception e) {
-			catched = true;
-		}
+    catched = false;
 
-		assertTrue(catched);
-	}
+    try {
+      JSONObject metadata = new JSONObject().put("jwks_uri", "ko");
 
-	@Test
-	public void test_verifyJWS() {
-		boolean catched = false;
-		RelyingPartyOptions options = null;
-		JWTHelper helper = null;
+      JWTHelper.getMetadataJWKSet(metadata);
+    } catch (Exception e) {
+      catched = true;
+    }
 
-		try {
-			options = getOptions();
+    assertTrue(catched);
 
-			helper = new JWTHelper(options);
-		}
-		catch(Exception e) {
-			catched = true;
-		}
+    // Good path is already tested implicitly
+  }
 
-		assertFalse(catched);
-		assertNotNull(helper);
-		assertNotNull(options);
+  @Test
+  public void test_parseRSAKey() {
+    boolean catched = false;
 
-		catched = false;
+    try {
+      JWTHelper.parseRSAKey("{invalid-json}");
+    } catch (Exception e) {
+      catched = true;
+    }
 
-		try {
-			JWKSet jwkSet = createJWKSet();
+    assertTrue(catched);
 
-			JSONObject jwks = new JSONObject(jwkSet.toJSONObject(false));
-			JSONObject payload = new JSONObject().put("sub", "sub");
+    // Good path is already tested implicitly
+  }
 
-			String jws = createJWS(payload, jwks);
+  @Test
+  public void test_createJWS() {
+    JSONObject payload = new JSONObject().put("test", "test");
 
-			helper.verifyJWS(jws, new JWKSet());
-		}
-		catch(Exception e) {
-			catched = true;
-		}
+    boolean catched = false;
+    JWTHelper helper = null;
 
-		assertTrue(catched);
+    try {
+      RelyingPartyOptions options = getOptions();
 
-		catched = false;
+      helper = new JWTHelper(options);
+    } catch (Exception e) {
+      catched = true;
+    }
 
-		try {
-			helper.verifyJWS("invalid-jws", new JWKSet());
-		}
-		catch(Exception e) {
-			catched = true;
-		}
+    assertFalse(catched);
+    assertNotNull(helper);
 
-		assertTrue(catched);
+    catched = false;
+    String res = null;
 
-		catched = false;
+    try {
+      ECKey ecKey = createECKey(KeyUse.ENCRYPTION);
 
-		try {
-			JWKSet jwkSet = createJWKSet();
+      JWKSet jwkSet = new JWKSet(Arrays.asList(ecKey));
 
-			JSONObject jwks = new JSONObject(jwkSet.toJSONObject(false));
-			JSONObject payload = new JSONObject().put("sub", "sub");
+      res = helper.createJWS(payload, jwkSet);
+    } catch (Exception e) {
+      catched = true;
+    }
 
-			String jws = createJWS(payload, jwks);
+    assertTrue(catched); // Default signer make fail
 
-			options.setAllowedSigningAlgs("RS512", "ES512");
+    // Good path is already tested implicitly
+  }
 
-			helper.verifyJWS(jws, jwkSet);
-		}
-		catch(Exception e) {
-			catched = true;
-		}
+  @Test
+  public void test_decryptJWE() {
+    boolean catched = false;
+    JWTHelper helper = null;
 
-		assertTrue(catched);
-	}
+    try {
+      RelyingPartyOptions options = getOptions();
 
-	private String encode64(String value) {
-		return java.util.Base64.getEncoder().encodeToString(value.getBytes());
-	}
+      helper = new JWTHelper(options);
+    } catch (Exception e) {
+      catched = true;
+    }
 
-	private static JWKSet createJWKSet() throws Exception {
-		RSAKey rsaKey1 = JWTHelper.createRSAKey(JWSAlgorithm.RS256, KeyUse.SIGNATURE);
-		//RSAKey rsaKey2 = JWTHelper.createRSAKey(null, KeyUse.ENCRYPTION);
+    assertFalse(catched);
+    assertNotNull(helper);
 
-		return new JWKSet(Arrays.asList(rsaKey1));
-	}
+    catched = false;
 
-	private static String createJWS(JSONObject payload, JSONObject jwks)
-		throws Exception {
+    try {
+      helper.decryptJWE("invalid-jwe", null);
+    } catch (Exception e) {
+      catched = true;
+    }
 
-		JWKSet jwkSet = JWKSet.parse(jwks.toString());
+    assertTrue(catched);
+  }
 
-		JWK jwk = JWTHelper.getFirstJWK(jwkSet);
+  @Test
+  public void test_verifyJWS() {
+    boolean catched = false;
+    RelyingPartyOptions options = null;
+    JWTHelper helper = null;
 
-		RSAKey rsaKey = (RSAKey)jwk;
+    try {
+      options = getOptions();
 
-		JWSSigner signer = new RSASSASigner(rsaKey);
-		JWSAlgorithm alg = JWSAlgorithm.RS256;
+      helper = new JWTHelper(options);
+    } catch (Exception e) {
+      catched = true;
+    }
 
-		// Prepare JWS object with the payload
+    assertFalse(catched);
+    assertNotNull(helper);
+    assertNotNull(options);
 
-		JWSObject jwsObject = new JWSObject(
-			new JWSHeader.Builder(alg).keyID(jwk.getKeyID()).build(),
-			new Payload(payload.toString()));
+    catched = false;
 
-		// Compute the signature
-		jwsObject.sign(signer);
+    try {
+      JWKSet jwkSet = createJWKSet();
 
-		// Serialize to compact form
-		return jwsObject.serialize();
-	}
+      JSONObject jwks = new JSONObject(jwkSet.toJSONObject(false));
+      JSONObject payload = new JSONObject().put("sub", "sub");
 
-	private static ECKey createECKey(KeyUse use) throws Exception {
-		return new ECKeyGenerator(Curve.P_256)
-			.keyUse(use)
-			.keyIDFromThumbprint(true)
-			.generate();
-	}
+      String jws = createJWS(payload, jwks);
 
-	private static OctetSequenceKey createOSKey(KeyUse use) throws Exception {
-		return new OctetSequenceKeyGenerator(256)
-			.algorithm(JWSAlgorithm.HS256)
-			.keyUse(use)
-			.keyIDFromThumbprint(true)
-			.generate();
-	}
+      helper.verifyJWS(jws, new JWKSet());
+    } catch (Exception e) {
+      catched = true;
+    }
 
-	private RelyingPartyOptions getOptions() throws Exception {
-		Map<String, String> spidProviders = new HashMap<>();
+    assertTrue(catched);
 
-		spidProviders.put(SPID_PROVIDER, TRUST_ANCHOR);
+    catched = false;
 
-		RelyingPartyOptions options = new RelyingPartyOptions()
-			.setDefaultTrustAnchor(TRUST_ANCHOR)
-			.setClientId(RELYING_PARTY)
-			.setSPIDProviders(spidProviders)
-			.setTrustAnchors(ArrayUtil.asSet(TRUST_ANCHOR))
-			.setApplicationName("JUnit RP")
-			.setRedirectUris(ArrayUtil.asSet(RELYING_PARTY + "callback"))
-			.setJWKFed(TestUtils.getContent("rp-jwks.json"))
-			.setTrustMarks(TestUtils.getContent("rp-trust-marks.json"));
+    try {
+      helper.verifyJWS("invalid-jws", new JWKSet());
+    } catch (Exception e) {
+      catched = true;
+    }
 
-		return options;
-	}
+    assertTrue(catched);
+
+    catched = false;
+
+    try {
+      JWKSet jwkSet = createJWKSet();
+
+      JSONObject jwks = new JSONObject(jwkSet.toJSONObject(false));
+      JSONObject payload = new JSONObject().put("sub", "sub");
+
+      String jws = createJWS(payload, jwks);
+
+      options.setAllowedSigningAlgs("RS512", "ES512");
+
+      helper.verifyJWS(jws, jwkSet);
+    } catch (Exception e) {
+      catched = true;
+    }
+
+    assertTrue(catched);
+  }
+
+  private String encode64(String value) {
+    return java.util.Base64.getEncoder().encodeToString(value.getBytes());
+  }
+
+  private RelyingPartyOptions getOptions() throws Exception {
+    Map<String, String> spidProviders = new HashMap<>();
+
+    spidProviders.put(SPID_PROVIDER, TRUST_ANCHOR);
+
+    RelyingPartyOptions options = new RelyingPartyOptions()
+      .setDefaultTrustAnchor(TRUST_ANCHOR)
+      .setClientId(RELYING_PARTY)
+      .setSPIDProviders(spidProviders)
+      .setTrustAnchors(ArrayUtil.asSet(TRUST_ANCHOR))
+      .setApplicationName("JUnit RP")
+      .setRedirectUris(ArrayUtil.asSet(RELYING_PARTY + "callback"))
+      .setJWKFed(TestUtils.getContent("rp-jwks.json"))
+      .setTrustMarks(TestUtils.getContent("rp-trust-marks.json"));
+
+    return options;
+  }
 
 
 }

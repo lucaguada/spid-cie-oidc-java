@@ -1,187 +1,184 @@
 package it.spid.cie.oidc.model;
 
-import java.time.LocalDateTime;
-
 import org.json.JSONObject;
 
-import it.spid.cie.oidc.exception.OIDCException;
+import java.time.LocalDateTime;
 
 public class TrustChain extends BaseModel {
 
-	private boolean active;
-	private String chain;
-	private LocalDateTime exp;
-	private LocalDateTime iat;
-	private String log = "";
-	private String metadata;
-	private String partiesInvolved;
-	private LocalDateTime processingStart;
-	private String status = "unreachable";
-	private String sub;
-	private String trustAnchor;
-	private String trustMarks;
-	private String type;
+  private boolean active;
+  private String chain;
+  private LocalDateTime exp;
+  private LocalDateTime iat;
+  private String log = "";
+  private String metadata;
+  private String partiesInvolved;
+  private LocalDateTime processingStart;
+  private String status = "unreachable";
+  private String sub;
+  private String trustAnchor;
+  private String trustMarks;
+  private String type;
 
-	public TrustChain() {
-		super();
-		this.iat = LocalDateTime.now();
-	}
+  public TrustChain() {
+    super();
+    this.iat = LocalDateTime.now();
+  }
 
-	/**
-	 * @return the string representation of a JSONArray with the list of entity statements
-	 * collected during the metadata discovery
-	 */
-	public String getChain() {
-		return chain;
-	}
+  /**
+   * @return the string representation of a JSONArray with the list of entity statements
+   * collected during the metadata discovery
+   */
+  public String getChain() {
+    return chain;
+  }
 
-	public LocalDateTime getExpiresOn() {
-		return exp;
-	}
+  public TrustChain setChain(String chain) {
+    this.chain = chain;
 
-	public LocalDateTime getIssuedAt() {
-		return iat;
-	}
+    return this;
+  }
 
-	public String getLog() {
-		return log;
-	}
+  public LocalDateTime getExpiresOn() {
+    return exp;
+  }
 
-	/**
-	 * @return the string representation of a JSONObject with the final metadata applied
-	 * with the metadata policy built over the chain
-	 */
-	public String getMetadata() {
-		return metadata;
-	}
+  public TrustChain setExpiresOn(LocalDateTime expiresOn) {
+    this.exp = expiresOn;
 
-	public JSONObject getMetadataAsJSON() {
-		try {
-			return new JSONObject(this.metadata);
-		}
-		catch (Exception e) {
-			// Ignore
-		}
+    return this;
+  }
 
-		return new JSONObject();
-	}
+  public LocalDateTime getIssuedAt() {
+    return iat;
+  }
 
-	public String getPartiesInvolved() {
-		return partiesInvolved;
-	}
+  public TrustChain setIssuedAt(LocalDateTime issuedAt) {
+    this.iat = issuedAt;
 
-	public LocalDateTime getProcessingStart() {
-		return processingStart;
-	}
+    return this;
+  }
 
-	public String getSubject() {
-		return sub;
-	}
+  public String getLog() {
+    return log;
+  }
 
-	public String getStatus() {
-		return status;
-	}
+  public TrustChain setLog(String log) {
+    this.log = log;
 
-	public String getTrustAnchor() {
-		return trustAnchor;
-	}
+    return this;
+  }
 
-	public String getTrustMarks() {
-		return trustMarks;
-	}
+  /**
+   * @return the string representation of a JSONObject with the final metadata applied
+   * with the metadata policy built over the chain
+   */
+  public String getMetadata() {
+    return metadata;
+  }
 
-	public String getType() {
-		return type;
-	}
+  public TrustChain setMetadata(String metadata) {
+    this.metadata = metadata;
 
-	public boolean isActive() {
-		return active;
-	}
+    return this;
+  }
 
-	public boolean isExpired() {
-		if (exp != null) {
-			return exp.isBefore(LocalDateTime.now());
-		}
+  public JSONObject getMetadataAsJSON() {
+    try {
+      return new JSONObject(this.metadata);
+    } catch (Exception e) {
+      // Ignore
+    }
 
-		return true;
-	}
+    return new JSONObject();
+  }
 
-	public TrustChain setActive(boolean active) {
-		this.active = active;
+  public String getPartiesInvolved() {
+    return partiesInvolved;
+  }
 
-		return this;
-	}
+  public TrustChain setPartiesInvolved(String partiesInvolved) {
+    this.partiesInvolved = partiesInvolved;
 
-	public TrustChain setChain(String chain) {
-		this.chain = chain;
+    return this;
+  }
 
-		return this;
-	}
+  public LocalDateTime getProcessingStart() {
+    return processingStart;
+  }
 
-	public TrustChain setExpiresOn(LocalDateTime expiresOn) {
-		this.exp = expiresOn;
+  public TrustChain setProcessingStart(LocalDateTime processingStart) {
+    this.processingStart = processingStart;
 
-		return this;
-	}
+    return this;
+  }
 
-	public TrustChain setIssuedAt(LocalDateTime issuedAt) {
-		this.iat = issuedAt;
+  public String getSubject() {
+    return sub;
+  }
 
-		return this;
-	}
+  public TrustChain setSubject(String subject) {
+    this.sub = subject;
 
-	public TrustChain setLog(String log) {
-		this.log = log;
+    return this;
+  }
 
-		return this;
-	}
+  public String getStatus() {
+    return status;
+  }
 
-	public TrustChain setMetadata(String metadata) {
-		this.metadata = metadata;
+  public TrustChain setStatus(String status) {
+    this.status = status;
 
-		return this;
-	}
+    return this;
+  }
 
-	public TrustChain setPartiesInvolved(String partiesInvolved) {
-		this.partiesInvolved = partiesInvolved;
+  public String getTrustAnchor() {
+    return trustAnchor;
+  }
 
-		return this;
-	}
+  public TrustChain setTrustAnchor(String trustAnchor) {
+    this.trustAnchor = trustAnchor;
 
-	public TrustChain setProcessingStart(LocalDateTime processingStart) {
-		this.processingStart = processingStart;
+    return this;
+  }
 
-		return this;
-	}
+  public String getTrustMarks() {
+    return trustMarks;
+  }
 
-	public TrustChain setStatus(String status) {
-		this.status = status;
+  public TrustChain setTrustMarks(String trustMarks) {
+    this.trustMarks = trustMarks;
 
-		return this;
-	}
+    return this;
+  }
 
-	public TrustChain setSubject(String subject) {
-		this.sub = subject;
+  public String getType() {
+    return type;
+  }
 
-		return this;
-	}
+  public TrustChain setType(String type) {
+    this.type = type;
 
-	public TrustChain setTrustAnchor(String trustAnchor) {
-		this.trustAnchor = trustAnchor;
+    return this;
+  }
 
-		return this;
-	}
+  public boolean isActive() {
+    return active;
+  }
 
-	public TrustChain setTrustMarks(String trustMarks) {
-		this.trustMarks = trustMarks;
+  public TrustChain setActive(boolean active) {
+    this.active = active;
 
-		return this;
-	}
+    return this;
+  }
 
-	public TrustChain setType(String type) {
-		this.type = type;
+  public boolean isExpired() {
+    if (exp != null) {
+      return exp.isBefore(LocalDateTime.now());
+    }
 
-		return this;
-	}
+    return true;
+  }
 
 }

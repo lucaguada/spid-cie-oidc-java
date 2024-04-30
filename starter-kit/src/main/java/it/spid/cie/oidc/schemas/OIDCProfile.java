@@ -4,48 +4,48 @@ import it.spid.cie.oidc.exception.OIDCException;
 
 public enum OIDCProfile {
 
-	SPID("spid"),
-	CIE("cie");
+  SPID("spid"),
+  CIE("cie");
 
-	private final String value;
+  private final String value;
 
-	public static OIDCProfile parse(String value) {
-		if (value != null) {
-			for (OIDCProfile elem : OIDCProfile.values()) {
-				if (value.equals(elem.value())) {
-					return elem;
-				}
-			}
-		}
+  private OIDCProfile(String value) {
+    this.value = value;
+  }
 
-		return null;
-	}
+  public static OIDCProfile parse(String value) {
+    if (value != null) {
+      for (OIDCProfile elem : OIDCProfile.values()) {
+        if (value.equals(elem.value())) {
+          return elem;
+        }
+      }
+    }
 
-	public static OIDCProfile parse(String value, boolean strict) throws OIDCException {
-		OIDCProfile result = parse(value);
+    return null;
+  }
 
-		if (result == null && strict) {
-			throw new OIDCException("Invalid value: " + value);
-		}
+  public static OIDCProfile parse(String value, boolean strict) throws OIDCException {
+    OIDCProfile result = parse(value);
 
-		return result;
-	}
+    if (result == null && strict) {
+      throw new OIDCException("Invalid value: " + value);
+    }
 
-	public boolean equalValue(String value) {
-		return this.value.equals(value);
-	}
+    return result;
+  }
 
-	@Override
-	public String toString() {
-		return value();
-	}
+  public boolean equalValue(String value) {
+    return this.value.equals(value);
+  }
 
-	public String value() {
-		return value;
-	}
+  @Override
+  public String toString() {
+    return value();
+  }
 
-	private OIDCProfile(String value) {
-		this.value =value;
-	}
+  public String value() {
+    return value;
+  }
 
 }

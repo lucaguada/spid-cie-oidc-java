@@ -1,89 +1,86 @@
 package it.spid.cie.oidc.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import static org.junit.Assert.*;
 
 public class TestStringUtil {
 
-	@Test
-	public void testConstructor() {
-		StringUtil obj = new StringUtil();
+  @Test
+  public void testConstructor() {
+    StringUtil obj = new StringUtil();
 
-		assertNotNull(obj);
-	}
+    assertNotNull(obj);
+  }
 
-	@Test
-	public void ensureTrailingSlash1() {
-		String value = StringUtil.ensureTrailingSlash("test");
+  @Test
+  public void ensureTrailingSlash1() {
+    String value = StringUtil.ensureTrailingSlash("test");
 
-		assertNotEquals("test", value);
-	}
+    assertNotEquals("test", value);
+  }
 
-	@Test
-	public void ensureTrailingSlash2() {
-		String value = StringUtil.ensureTrailingSlash("test/");
+  @Test
+  public void ensureTrailingSlash2() {
+    String value = StringUtil.ensureTrailingSlash("test/");
 
-		assertEquals("test/", value);
-	}
+    assertEquals("test/", value);
+  }
 
-	@Test
-	public void ensureTrailingSlash3() {
-		String value = StringUtil.ensureTrailingSlash(null);
+  @Test
+  public void ensureTrailingSlash3() {
+    String value = StringUtil.ensureTrailingSlash(null);
 
-		assertNull(value);
-	}
+    assertNull(value);
+  }
 
-	@Test
-	public void mergeArray1() {
-		String value = StringUtil.merge(new String[] {"0", "1", "2" });
+  @Test
+  public void mergeArray1() {
+    String value = StringUtil.merge(new String[]{"0", "1", "2"});
 
-		assertEquals("0,1,2", value);
-	}
+    assertEquals("0,1,2", value);
+  }
 
-	@Test
-	public void mergeArray2() {
-		String value = StringUtil.merge(new String[] {"0"});
+  @Test
+  public void mergeArray2() {
+    String value = StringUtil.merge(new String[]{"0"});
 
-		assertEquals("0", value);
-	}
+    assertEquals("0", value);
+  }
 
-	@Test
-	public void mergeCollection1() {
-		List<Long> list = null;
+  @Test
+  public void mergeCollection1() {
+    List<Long> list = null;
 
-		String value = StringUtil.merge(list);
+    String value = StringUtil.merge(list);
 
-		assertEquals("", value);
-	}
+    assertEquals("", value);
+  }
 
-	@Test
-	public void mergeCollection2() {
-		List<Long> list = new ArrayList<>();
+  @Test
+  public void mergeCollection2() {
+    List<Long> list = new ArrayList<>();
 
-		String value = StringUtil.merge(list);
+    String value = StringUtil.merge(list);
 
-		assertEquals("", value);
-	}
+    assertEquals("", value);
+  }
 
-	@Test
-	public void mergeCollection3() {
-		List<Object> list = new ArrayList<>();
+  @Test
+  public void mergeCollection3() {
+    List<Object> list = new ArrayList<>();
 
-		list.add(1L);
-		list.add("test");
-		list.add(true);
+    list.add(1L);
+    list.add("test");
+    list.add(true);
 
-		String value = StringUtil.merge(list);
+    String value = StringUtil.merge(list);
 
-		assertEquals("1,test,true", value);
-	}
+    assertEquals("1,test,true", value);
+  }
 
 
 }

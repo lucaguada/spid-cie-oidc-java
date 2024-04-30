@@ -4,44 +4,44 @@ import it.spid.cie.oidc.exception.OIDCException;
 
 public enum ClaimSection {
 
-	ID_TOKEN("id_token"),
-	USER_INFO("userinfo");
+  ID_TOKEN("id_token"),
+  USER_INFO("userinfo");
 
-	private final String value;
+  private final String value;
 
-	public static ClaimSection parse(String value) {
-		if (value != null) {
-			for (ClaimSection elem : ClaimSection.values()) {
-				if (value.equals(elem.value())) {
-					return elem;
-				}
-			}
-		}
+  private ClaimSection(String value) {
+    this.value = value;
+  }
 
-		return null;
-	}
+  public static ClaimSection parse(String value) {
+    if (value != null) {
+      for (ClaimSection elem : ClaimSection.values()) {
+        if (value.equals(elem.value())) {
+          return elem;
+        }
+      }
+    }
 
-	public static ClaimSection parse(String value, boolean strict) throws OIDCException {
-		ClaimSection result = parse(value);
+    return null;
+  }
 
-		if (result == null && strict) {
-			throw new OIDCException("Invalid value: " + value);
-		}
+  public static ClaimSection parse(String value, boolean strict) throws OIDCException {
+    ClaimSection result = parse(value);
 
-		return result;
-	}
+    if (result == null && strict) {
+      throw new OIDCException("Invalid value: " + value);
+    }
 
-	@Override
-	public String toString() {
-		return value();
-	}
+    return result;
+  }
 
-	public String value() {
-		return value;
-	}
+  @Override
+  public String toString() {
+    return value();
+  }
 
-	private ClaimSection(String value) {
-		this.value =value;
-	}
+  public String value() {
+    return value;
+  }
 
 }

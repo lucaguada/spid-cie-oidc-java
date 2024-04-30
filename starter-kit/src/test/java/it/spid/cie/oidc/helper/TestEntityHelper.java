@@ -1,187 +1,177 @@
 package it.spid.cie.oidc.helper;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.WireMock;
+import it.spid.cie.oidc.config.OIDCConstants;
+import it.spid.cie.oidc.config.RelyingPartyOptions;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.client.WireMock;
+import java.io.IOException;
 
-import it.spid.cie.oidc.config.OIDCConstants;
-import it.spid.cie.oidc.config.RelyingPartyOptions;
+import static org.junit.Assert.*;
 
 public class TestEntityHelper {
 
-	private static WireMockServer wireMockServer;
+  private static WireMockServer wireMockServer;
 
-	@BeforeClass
-	public static void setUp() throws IOException {
-		wireMockServer = new WireMockServer();
+  @BeforeClass
+  public static void setUp() throws IOException {
+    wireMockServer = new WireMockServer();
 
-		wireMockServer.start();
+    wireMockServer.start();
 
-		System.out.println("mock=" + wireMockServer.baseUrl());
-	}
+    System.out.println("mock=" + wireMockServer.baseUrl());
+  }
 
-	@AfterClass
-	public static void tearDown() throws IOException {
-		wireMockServer.stop();
-	}
+  @AfterClass
+  public static void tearDown() throws IOException {
+    wireMockServer.stop();
+  }
 
-	@SuppressWarnings("static-access")
-	@Test
-	public void testClass1a() {
-		RelyingPartyOptions options = new RelyingPartyOptions();
+  @SuppressWarnings("static-access")
+  @Test
+  public void testClass1a() {
+    RelyingPartyOptions options = new RelyingPartyOptions();
 
-		EntityHelper helper = new EntityHelper(options);
+    EntityHelper helper = new EntityHelper(options);
 
-		assertNotNull(helper);
+    assertNotNull(helper);
 
-		wireMockServer.resetAll();
+    wireMockServer.resetAll();
 
-		String url = getBaseHttpURL();
-		boolean catched = false;
-		String fakeResponse = "fake-response";
-		String res = "";
+    String url = getBaseHttpURL();
+    boolean catched = false;
+    String fakeResponse = "fake-response";
+    String res = "";
 
-		wireMockServer.stubFor(
-			WireMock.get(
-				"/" + OIDCConstants.OIDC_FEDERATION_WELLKNOWN_URL
-			).willReturn(
-				WireMock.ok(fakeResponse)
-			));
+    wireMockServer.stubFor(
+      WireMock.get(
+        "/" + OIDCConstants.OIDC_FEDERATION_WELLKNOWN_URL
+      ).willReturn(
+        WireMock.ok(fakeResponse)
+      ));
 
-		try {
-			res = helper.getEntityConfiguration(url);
-		}
-		catch (Exception e) {
-			System.out.println(e);
-			catched = true;
-		}
+    try {
+      res = helper.getEntityConfiguration(url);
+    } catch (Exception e) {
+      System.out.println(e);
+      catched = true;
+    }
 
-		assertFalse(catched);
-		assertEquals(fakeResponse, res);
-	}
+    assertFalse(catched);
+    assertEquals(fakeResponse, res);
+  }
 
-	@SuppressWarnings("static-access")
-	@Test
-	public void testClass1b() {
-		RelyingPartyOptions options = new RelyingPartyOptions();
+  @SuppressWarnings("static-access")
+  @Test
+  public void testClass1b() {
+    RelyingPartyOptions options = new RelyingPartyOptions();
 
-		EntityHelper helper = new EntityHelper(options);
+    EntityHelper helper = new EntityHelper(options);
 
-		assertNotNull(helper);
+    assertNotNull(helper);
 
-		wireMockServer.resetAll();
+    wireMockServer.resetAll();
 
-		String url = getBaseHttpURL();
-		boolean catched = false;
+    String url = getBaseHttpURL();
+    boolean catched = false;
 
-		wireMockServer.stubFor(
-			WireMock.get(
-				"/" + OIDCConstants.OIDC_FEDERATION_WELLKNOWN_URL
-			).willReturn(
-				WireMock.forbidden()
-			));
+    wireMockServer.stubFor(
+      WireMock.get(
+        "/" + OIDCConstants.OIDC_FEDERATION_WELLKNOWN_URL
+      ).willReturn(
+        WireMock.forbidden()
+      ));
 
-		try {
-			helper.getEntityConfiguration(url);
-		}
-		catch (Exception e) {
-			catched = true;
-		}
+    try {
+      helper.getEntityConfiguration(url);
+    } catch (Exception e) {
+      catched = true;
+    }
 
-		assertTrue(catched);
-	}
+    assertTrue(catched);
+  }
 
-	@SuppressWarnings("static-access")
-	@Test
-	public void testClass2a() {
-		RelyingPartyOptions options = new RelyingPartyOptions();
+  @SuppressWarnings("static-access")
+  @Test
+  public void testClass2a() {
+    RelyingPartyOptions options = new RelyingPartyOptions();
 
-		EntityHelper helper = new EntityHelper(options);
+    EntityHelper helper = new EntityHelper(options);
 
-		assertNotNull(helper);
+    assertNotNull(helper);
 
-		wireMockServer.resetAll();
+    wireMockServer.resetAll();
 
-		String url = getBaseHttpURL();
-		boolean catched = false;
-		String fakeResponse = "fake-response";
-		String res = "";
+    String url = getBaseHttpURL();
+    boolean catched = false;
+    String fakeResponse = "fake-response";
+    String res = "";
 
-		wireMockServer.stubFor(
-			WireMock.get(
-				"/"
-			).willReturn(
-				WireMock.ok(fakeResponse)
-			));
+    wireMockServer.stubFor(
+      WireMock.get(
+        "/"
+      ).willReturn(
+        WireMock.ok(fakeResponse)
+      ));
 
-		try {
-			res = helper.getEntityStatement(url);
-		}
-		catch (Exception e) {
-			catched = true;
-		}
+    try {
+      res = helper.getEntityStatement(url);
+    } catch (Exception e) {
+      catched = true;
+    }
 
-		assertFalse(catched);
-		assertEquals(fakeResponse, res);
-	}
+    assertFalse(catched);
+    assertEquals(fakeResponse, res);
+  }
 
-	@SuppressWarnings("static-access")
-	@Test
-	public void testClass2b() {
-		RelyingPartyOptions options = new RelyingPartyOptions();
+  @SuppressWarnings("static-access")
+  @Test
+  public void testClass2b() {
+    RelyingPartyOptions options = new RelyingPartyOptions();
 
-		EntityHelper helper = new EntityHelper(options);
+    EntityHelper helper = new EntityHelper(options);
 
-		assertNotNull(helper);
+    assertNotNull(helper);
 
-		wireMockServer.resetAll();
+    wireMockServer.resetAll();
 
-		String url = getBaseHttpURL();
-		boolean catched = false;
+    String url = getBaseHttpURL();
+    boolean catched = false;
 
-		wireMockServer.stubFor(
-			WireMock.get(
-				"/"
-			).willReturn(
-				WireMock.forbidden()
-			));
+    wireMockServer.stubFor(
+      WireMock.get(
+        "/"
+      ).willReturn(
+        WireMock.forbidden()
+      ));
 
-		try {
-			helper.getEntityStatement(url);
-		}
-		catch (Exception e) {
-			catched = true;
-		}
+    try {
+      helper.getEntityStatement(url);
+    } catch (Exception e) {
+      catched = true;
+    }
 
-		assertTrue(catched);
-	}
+    assertTrue(catched);
+  }
 
-	@Test
-	public void test_getEntityStatement() {
-		boolean catched = false;
+  @Test
+  public void test_getEntityStatement() {
+    boolean catched = false;
 
-		try {
-			EntityHelper.getEntityStatement("bad-url");
-		}
-		catch (Exception e) {
-			catched = true;
-		}
+    try {
+      EntityHelper.getEntityStatement("bad-url");
+    } catch (Exception e) {
+      catched = true;
+    }
 
-		assertTrue(catched);
-	}
+    assertTrue(catched);
+  }
 
-	private String getBaseHttpURL() {
-		return "http://127.0.0.1:" + wireMockServer.port() + "/";
-	}
+  private String getBaseHttpURL() {
+    return "http://127.0.0.1:" + wireMockServer.port() + "/";
+  }
 
 }

@@ -1,69 +1,68 @@
 package it.spid.cie.oidc.exception;
 
-import static org.junit.Assert.assertNotNull;
-
+import it.spid.cie.oidc.model.TrustChain;
 import org.junit.Test;
 
-import it.spid.cie.oidc.model.TrustChain;
+import static org.junit.Assert.assertNotNull;
 
 public class TestTrustChainException extends BaseTestException {
 
-	@Test
-	public void testMissingProvider() {
-		OIDCException e = new TrustChainException.MissingProvider();
+  @Test
+  public void testMissingProvider() {
+    OIDCException e = new TrustChainException.MissingProvider();
 
-		assertNotNull(e);
-	}
+    assertNotNull(e);
+  }
 
-	@Test
-	public void testInvalidRequiredTrustMark() {
-		OIDCException e = new TrustChainException.InvalidRequiredTrustMark(MSG);
+  @Test
+  public void testInvalidRequiredTrustMark() {
+    OIDCException e = new TrustChainException.InvalidRequiredTrustMark(MSG);
 
-		assertNotNull(e);
-	}
+    assertNotNull(e);
+  }
 
-	@Test
-	public void testInvalidTrustAnchor() {
-		OIDCException e = new TrustChainException.InvalidTrustAnchor();
+  @Test
+  public void testInvalidTrustAnchor() {
+    OIDCException e = new TrustChainException.InvalidTrustAnchor();
 
-		assertNotNull(e);
-	}
+    assertNotNull(e);
+  }
 
-	@Test
-	public void testInvalidTrustChain() {
-		OIDCException e = new TrustChainException.InvalidTrustChain(MSG);
+  @Test
+  public void testInvalidTrustChain() {
+    OIDCException e = new TrustChainException.InvalidTrustChain(MSG);
 
-		assertNotNull(e);
-	}
+    assertNotNull(e);
+  }
 
-	@Test
-	public void testMissingMetadata() {
-		OIDCException e = new TrustChainException.MissingMetadata(MSG);
+  @Test
+  public void testMissingMetadata() {
+    OIDCException e = new TrustChainException.MissingMetadata(MSG);
 
-		assertNotNull(e);
-	}
+    assertNotNull(e);
+  }
 
-	@Test
-	public void testTrustAnchorNeeded() {
-		OIDCException e = new TrustChainException.TrustAnchorNeeded(MSG);
+  @Test
+  public void testTrustAnchorNeeded() {
+    OIDCException e = new TrustChainException.TrustAnchorNeeded(MSG);
 
-		assertNotNull(e);
-	}
+    assertNotNull(e);
+  }
 
-	@Test
-	public void testTrustChainDisabled1() {
-		TrustChain tc = new TrustChain();
+  @Test
+  public void testTrustChainDisabled1() {
+    TrustChain tc = new TrustChain();
 
-		OIDCException e = new TrustChainException.TrustChainDisabled(tc);
+    OIDCException e = new TrustChainException.TrustChainDisabled(tc);
 
-		assertNotNull(e);
-	}
+    assertNotNull(e);
+  }
 
-	@Test
-	public void testTrustChainDisabled2() {
-		OIDCException e = new TrustChainException.TrustChainDisabled(MSG);
+  @Test
+  public void testTrustChainDisabled2() {
+    OIDCException e = new TrustChainException.TrustChainDisabled(MSG);
 
-		assertNotNull(e);
-	}
+    assertNotNull(e);
+  }
 
 }

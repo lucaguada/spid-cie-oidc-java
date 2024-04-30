@@ -12,92 +12,92 @@ import java.time.LocalDateTime;
  */
 public class CachedEntityInfo extends BaseModel {
 
-	private String iss;
-	private String sub;
-	private LocalDateTime exp;
-	private LocalDateTime iat;
-	private String statement;
-	private String jwt;
+  private String iss;
+  private String sub;
+  private LocalDateTime exp;
+  private LocalDateTime iat;
+  private String statement;
+  private String jwt;
 
-	public static CachedEntityInfo of(
-		String iss, String sub, LocalDateTime exp, LocalDateTime iat, String statement,
-		String jwt) {
+  public static CachedEntityInfo of(
+    String iss, String sub, LocalDateTime exp, LocalDateTime iat, String statement,
+    String jwt) {
 
-		return new CachedEntityInfo()
-			.setExpiresOn(exp)
-			.setIssuedAt(iat)
-			.setIssuer(iss)
-			.setJwt(jwt)
-			.setStatement(statement)
-			.setSubject(sub);
-	}
+    return new CachedEntityInfo()
+      .setExpiresOn(exp)
+      .setIssuedAt(iat)
+      .setIssuer(iss)
+      .setJwt(jwt)
+      .setStatement(statement)
+      .setSubject(sub);
+  }
 
-	public LocalDateTime getExpiresOn() {
-		return exp;
-	}
+  public LocalDateTime getExpiresOn() {
+    return exp;
+  }
 
-	public LocalDateTime getIssuedAt() {
-		return iat;
-	}
+  public CachedEntityInfo setExpiresOn(LocalDateTime expiresOn) {
+    this.exp = expiresOn;
 
-	public String getIssuer() {
-		return iss;
-	}
+    return this;
+  }
 
-	public String getJwt() {
-		return jwt;
-	}
+  public LocalDateTime getIssuedAt() {
+    return iat;
+  }
 
-	public String getStatement() {
-		return statement;
-	}
+  public CachedEntityInfo setIssuedAt(LocalDateTime issuedAt) {
+    this.iat = issuedAt;
 
-	public String getSubject() {
-		return sub;
-	}
+    return this;
+  }
 
-	public boolean isExpired() {
-		if (exp != null) {
-			return exp.isBefore(LocalDateTime.now());
-		}
+  public String getIssuer() {
+    return iss;
+  }
 
-		return true;
-	}
+  public CachedEntityInfo setIssuer(String issuer) {
+    this.iss = issuer;
 
-	public CachedEntityInfo setExpiresOn(LocalDateTime expiresOn) {
-		this.exp = expiresOn;
+    return this;
+  }
 
-		return this;
-	}
+  public String getJwt() {
+    return jwt;
+  }
 
-	public CachedEntityInfo setIssuedAt(LocalDateTime issuedAt) {
-		this.iat = issuedAt;
+  public CachedEntityInfo setJwt(String jwt) {
+    this.jwt = jwt;
 
-		return this;
-	}
+    return this;
+  }
 
-	public CachedEntityInfo setIssuer(String issuer) {
-		this.iss = issuer;
+  public String getStatement() {
+    return statement;
+  }
 
-		return this;
-	}
+  public CachedEntityInfo setStatement(String statement) {
+    this.statement = statement;
 
-	public CachedEntityInfo setJwt(String jwt) {
-		this.jwt = jwt;
+    return this;
+  }
 
-		return this;
-	}
+  public String getSubject() {
+    return sub;
+  }
 
-	public CachedEntityInfo setStatement(String statement) {
-		this.statement = statement;
+  public CachedEntityInfo setSubject(String subject) {
+    this.sub = subject;
 
-		return this;
-	}
+    return this;
+  }
 
-	public CachedEntityInfo setSubject(String subject) {
-		this.sub = subject;
+  public boolean isExpired() {
+    if (exp != null) {
+      return exp.isBefore(LocalDateTime.now());
+    }
 
-		return this;
-	}
+    return true;
+  }
 
 }

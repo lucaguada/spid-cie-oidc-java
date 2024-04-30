@@ -1,65 +1,65 @@
 package it.spid.cie.oidc.exception;
 
-import static org.junit.Assert.assertNotNull;
-
 import org.junit.Test;
+
+import static org.junit.Assert.assertNotNull;
 
 public class TestJWTException extends BaseTestException {
 
-	@Test
-	public void testDecryption() {
-		OIDCException e = new JWTException.Decryption(CAUSE);
+  @Test
+  public void testDecryption() {
+    OIDCException e = new JWTException.Decryption(CAUSE);
 
-		assertNotNull(e);
-	}
+    assertNotNull(e);
+  }
 
-	@Test
-	public void testParse() {
-		OIDCException e = new JWTException.Parse(CAUSE);
+  @Test
+  public void testParse() {
+    OIDCException e = new JWTException.Parse(CAUSE);
 
-		assertNotNull(e);
-	}
+    assertNotNull(e);
+  }
 
-	@Test
-	public void testGeneric1() {
-		OIDCException e = new JWTException.Generic("test");
+  @Test
+  public void testGeneric1() {
+    OIDCException e = new JWTException.Generic("test");
 
-		assertNotNull(e);
-	}
+    assertNotNull(e);
+  }
 
-	@Test
-	public void testGeneric2() {
-		OIDCException e = new JWTException.Generic(CAUSE);
+  @Test
+  public void testGeneric2() {
+    OIDCException e = new JWTException.Generic(CAUSE);
 
-		assertNotNull(e);
-	}
+    assertNotNull(e);
+  }
 
-	@Test
-	public void testUnknownKid() {
-		OIDCException e = new JWTException.UnknownKid("kid", "jwks");
+  @Test
+  public void testUnknownKid() {
+    OIDCException e = new JWTException.UnknownKid("kid", "jwks");
 
-		assertNotNull(e);
-	}
+    assertNotNull(e);
+  }
 
-	@Test
-	public void testUnsupportedAlgorithm() {
-		OIDCException e = new JWTException.UnsupportedAlgorithm("alg");
+  @Test
+  public void testUnsupportedAlgorithm() {
+    OIDCException e = new JWTException.UnsupportedAlgorithm("alg");
 
-		assertNotNull(e);
-	}
+    assertNotNull(e);
+  }
 
-	@Test
-	public void testVerifier1() {
-		OIDCException e = new JWTException.Verifier("test");
+  @Test
+  public void testVerifier1() {
+    OIDCException e = new JWTException.Verifier("test");
 
-		assertNotNull(e);
-	}
+    assertNotNull(e);
+  }
 
-	@Test
-	public void testVerifier2() {
-		OIDCException e = new JWTException.Verifier(CAUSE);
+  @Test
+  public void testVerifier2() {
+    OIDCException e = new JWTException.Verifier(CAUSE);
 
-		assertNotNull(e);
-	}
+    assertNotNull(e);
+  }
 
 }

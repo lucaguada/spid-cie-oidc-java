@@ -4,115 +4,115 @@ import java.time.LocalDateTime;
 
 public class AuthnToken extends BaseModel {
 
-	private String code;
-	private String accessToken;
-	private String idToken;
-	private String scope;
-	private String tokenType;
-	private int expiresIn;
-	private String authnRequestId;
-	private String userKey;
-	private LocalDateTime revoked;
-	private String refreshToken;
+  private String code;
+  private String accessToken;
+  private String idToken;
+  private String scope;
+  private String tokenType;
+  private int expiresIn;
+  private String authnRequestId;
+  private String userKey;
+  private LocalDateTime revoked;
+  private String refreshToken;
 
-	public String getAccessToken() {
-		return accessToken;
-	}
+  public String getAccessToken() {
+    return accessToken;
+  }
 
-	public String getAuthnRequestId() {
-		return authnRequestId;
-	}
+  public AuthnToken setAccessToken(String accessToken) {
+    this.accessToken = accessToken;
 
-	public String getCode() {
-		return code;
-	}
+    return this;
+  }
 
-	public int getExpiresIn() {
-		return expiresIn;
-	}
+  public String getAuthnRequestId() {
+    return authnRequestId;
+  }
 
-	public String getIdToken() {
-		return idToken;
-	}
+  public AuthnToken setAuthnRequestId(String authnRequestId) {
+    this.authnRequestId = authnRequestId;
 
-	public String getRefreshToken() {
-		return refreshToken;
-	}
+    return this;
+  }
 
-	public LocalDateTime getRevoked() {
-		return revoked;
-	}
+  public String getCode() {
+    return code;
+  }
 
-	public String getScope() {
-		return scope;
-	}
+  public AuthnToken setCode(String code) {
+    this.code = code;
 
-	public String getTokenType() {
-		return tokenType;
-	}
+    return this;
+  }
 
-	public String getUserKey() {
-		return userKey;
-	}
+  public int getExpiresIn() {
+    return expiresIn;
+  }
 
-	public AuthnToken setAccessToken(String accessToken) {
-		this.accessToken = accessToken;
+  public AuthnToken setExpiresIn(int expiresIn) {
+    this.expiresIn = expiresIn;
 
-		return this;
-	}
+    return this;
+  }
 
-	public AuthnToken setAuthnRequestId(String authnRequestId) {
-		this.authnRequestId = authnRequestId;
+  public String getIdToken() {
+    return idToken;
+  }
 
-		return this;
-	}
+  public AuthnToken setIdToken(String idToken) {
+    this.idToken = idToken;
 
-	public AuthnToken setCode(String code) {
-		this.code = code;
+    return this;
+  }
 
-		return this;
-	}
+  public String getRefreshToken() {
+    return refreshToken;
+  }
 
-	public AuthnToken setExpiresIn(int expiresIn) {
-		this.expiresIn = expiresIn;
+  public AuthnToken setRefreshToken(String refreshToken) {
+    this.refreshToken = refreshToken;
 
-		return this;
-	}
+    return this;
+  }
 
-	public AuthnToken setIdToken(String idToken) {
-		this.idToken = idToken;
+  public LocalDateTime getRevoked() {
+    return revoked;
+  }
 
-		return this;
-	}
+  public AuthnToken setRevoked(LocalDateTime revoked) {
+    this.revoked = revoked;
 
-	public AuthnToken setRefreshToken(String refreshToken) {
-		this.refreshToken = refreshToken;
+    return this;
+  }
 
-		return this;
-	}
+  public String getScope() {
+    return scope;
+  }
 
-	public AuthnToken setRevoked(LocalDateTime revoked) {
-		this.revoked = revoked;
+  public AuthnToken setScope(String scope) {
+    this.scope = scope;
 
-		return this;
-	}
+    return this;
+  }
 
-	public AuthnToken setScope(String scope) {
-		this.scope = scope;
+  public String getTokenType() {
+    return tokenType;
+  }
 
-		return this;
-	}
+  public AuthnToken setTokenType(String tokenType) {
+    this.tokenType = tokenType;
 
-	public AuthnToken setTokenType(String tokenType) {
-		this.tokenType = tokenType;
+    return this;
+  }
 
-		return this;
-	}
+  public String getUserKey() {
+    return userKey;
+  }
 
-	public AuthnToken setUserKey(String userKey) {
-		this.userKey = userKey;
+  public AuthnToken setUserKey(String userKey) {
+    this.userKey = userKey;
 
-		return this;
-	}
+    return this;
+  }
 
 }

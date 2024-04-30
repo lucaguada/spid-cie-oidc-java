@@ -1,17 +1,7 @@
 package it.spid.cie.oidc.handler;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.lang.reflect.Method;
-
-import it.spid.cie.oidc.exception.OIDCException;
-import org.json.JSONObject;
-import org.junit.Test;
-
 import it.spid.cie.oidc.config.RelyingPartyOptions;
+import it.spid.cie.oidc.exception.OIDCException;
 import it.spid.cie.oidc.handler.extras.MemoryStorage;
 import it.spid.cie.oidc.model.AuthnRequest;
 import it.spid.cie.oidc.model.AuthnToken;
@@ -19,320 +9,310 @@ import it.spid.cie.oidc.model.FederationEntity;
 import it.spid.cie.oidc.schemas.CIEClaimItem;
 import it.spid.cie.oidc.schemas.SPIDClaimItem;
 import it.spid.cie.oidc.test.util.RPTestUtils;
+import org.json.JSONObject;
+import org.junit.Test;
+
+import java.lang.reflect.Method;
+
+import static org.junit.Assert.*;
 
 public class TestRelyingPartyHandler2 {
 
-	@Test
-	public void test_getUserKeyFromUserInfo() {
-		boolean catched = false;
+  @Test
+  public void test_getUserKeyFromUserInfo() {
+    boolean catched = false;
 
-		RelyingPartyOptions options = null;
-		RelyingPartyHandler handler = null;
-		Method privateMethod = null;
+    RelyingPartyOptions options = null;
+    RelyingPartyHandler handler = null;
+    Method privateMethod = null;
 
-		try {
-			options = RPTestUtils.getOptions();
+    try {
+      options = RPTestUtils.getOptions();
 
-			handler = new RelyingPartyHandler(
-				options, new MemoryStorage());
+      handler = new RelyingPartyHandler(
+        options, new MemoryStorage());
 
-			privateMethod = RelyingPartyHandler.class.getDeclaredMethod(
-				"getUserKeyFromUserInfo", JSONObject.class);
+      privateMethod = RelyingPartyHandler.class.getDeclaredMethod(
+        "getUserKeyFromUserInfo", JSONObject.class);
 
-			privateMethod.setAccessible(true);
-		}
-		catch (Exception e) {
-			System.err.println(e);
-			catched = true;
-		}
+      privateMethod.setAccessible(true);
+    } catch (Exception e) {
+      System.err.println(e);
+      catched = true;
+    }
 
-		assertFalse(catched);
+    assertFalse(catched);
 
-		String returnValue = "";
-		catched = false;
+    String returnValue = "";
+    catched = false;
 
-		try {
-			options.setUserKeyClaim(SPIDClaimItem.FISCAL_NUMBER.getName());
+    try {
+      options.setUserKeyClaim(SPIDClaimItem.FISCAL_NUMBER.getName());
 
-			JSONObject userInfo = new JSONObject()
-				.put(SPIDClaimItem.FISCAL_NUMBER.getAlias(), "test");
+      JSONObject userInfo = new JSONObject()
+        .put(SPIDClaimItem.FISCAL_NUMBER.getAlias(), "test");
 
-			returnValue = (String) privateMethod.invoke(handler, userInfo);
-		}
-		catch (Exception e) {
-			System.err.println(e);
-			catched = true;
-		}
-
-		assertFalse(catched);
-		assertEquals("test", returnValue);
+      returnValue = (String) privateMethod.invoke(handler, userInfo);
+    } catch (Exception e) {
+      System.err.println(e);
+      catched = true;
+    }
 
-		catched = false;
-
-		try {
-			options.setUserKeyClaim(SPIDClaimItem.FISCAL_NUMBER.getAlias());
-
-			JSONObject userInfo = new JSONObject()
-				.put(SPIDClaimItem.FISCAL_NUMBER.getName(), "test");
+    assertFalse(catched);
+    assertEquals("test", returnValue);
 
-			returnValue = (String) privateMethod.invoke(handler, userInfo);
-		}
-		catch (Exception e) {
-			System.err.println(e);
-			catched = true;
-		}
+    catched = false;
 
-		assertFalse(catched);
-		assertEquals("test", returnValue);
+    try {
+      options.setUserKeyClaim(SPIDClaimItem.FISCAL_NUMBER.getAlias());
 
-		catched = false;
+      JSONObject userInfo = new JSONObject()
+        .put(SPIDClaimItem.FISCAL_NUMBER.getName(), "test");
 
-		try {
-			CIEClaimItem.registerItem("test_uk_name", "test_uk_alias");
+      returnValue = (String) privateMethod.invoke(handler, userInfo);
+    } catch (Exception e) {
+      System.err.println(e);
+      catched = true;
+    }
 
-			options.setUserKeyClaim("test_uk_name");
+    assertFalse(catched);
+    assertEquals("test", returnValue);
 
-			JSONObject userInfo = new JSONObject()
-				.put("test_uk_alias", "test");
+    catched = false;
 
-			returnValue = (String) privateMethod.invoke(handler, userInfo);
-		}
-		catch (Exception e) {
-			System.err.println(e);
-			catched = true;
-		}
+    try {
+      CIEClaimItem.registerItem("test_uk_name", "test_uk_alias");
 
-		assertFalse(catched);
-		assertEquals("test", returnValue);
+      options.setUserKeyClaim("test_uk_name");
 
-		catched = false;
+      JSONObject userInfo = new JSONObject()
+        .put("test_uk_alias", "test");
 
-		try {
-			options.setUserKeyClaim("test_uk_alias");
+      returnValue = (String) privateMethod.invoke(handler, userInfo);
+    } catch (Exception e) {
+      System.err.println(e);
+      catched = true;
+    }
 
-			JSONObject userInfo = new JSONObject()
-				.put("test_uk_name", "test");
+    assertFalse(catched);
+    assertEquals("test", returnValue);
 
-			returnValue = (String) privateMethod.invoke(handler, userInfo);
-		}
-		catch (Exception e) {
-			System.err.println(e);
-			catched = true;
-		}
+    catched = false;
 
-		assertFalse(catched);
-		assertEquals("test", returnValue);
+    try {
+      options.setUserKeyClaim("test_uk_alias");
 
-		catched = false;
+      JSONObject userInfo = new JSONObject()
+        .put("test_uk_name", "test");
 
-		try {
-			options.setUserKeyClaim("test");
+      returnValue = (String) privateMethod.invoke(handler, userInfo);
+    } catch (Exception e) {
+      System.err.println(e);
+      catched = true;
+    }
 
-			JSONObject userInfo = new JSONObject()
-				.put("test_alias", "test");
+    assertFalse(catched);
+    assertEquals("test", returnValue);
 
-			returnValue = (String) privateMethod.invoke(handler, userInfo);
-		}
-		catch (Exception e) {
-			System.err.println(e);
-			catched = true;
-		}
+    catched = false;
 
-		assertFalse(catched);
-		assertNull(returnValue);
-	}
+    try {
+      options.setUserKeyClaim("test");
 
-	@Test
-	public void test_getUserInfo() {
-		RelyingPartyOptions options = null;
-		RelyingPartyHandler handler = null;
-		MemoryStorage storage = null;
+      JSONObject userInfo = new JSONObject()
+        .put("test_alias", "test");
 
-		boolean catched = false;
-		try {
-			options = RPTestUtils.getOptions();
-			storage = new MemoryStorage();
-			handler = new RelyingPartyHandler(options, storage);
-			handler.getUserInfo("test","test");
-		} catch (OIDCException e) {
-			catched = true;
-		} catch (Exception e) {
-			catched = true;
-		}
-		assertTrue(catched);
+      returnValue = (String) privateMethod.invoke(handler, userInfo);
+    } catch (Exception e) {
+      System.err.println(e);
+      catched = true;
+    }
 
-		try {
-			options = RPTestUtils.getOptions();
-			storage = new MemoryStorage();
+    assertFalse(catched);
+    assertNull(returnValue);
+  }
 
-			handler = new RelyingPartyHandler(options, storage);
-		}
-		catch (Exception e) {
-			catched = true;
-		}
+  @Test
+  public void test_getUserInfo() {
+    RelyingPartyOptions options = null;
+    RelyingPartyHandler handler = null;
+    MemoryStorage storage = null;
 
-		assertTrue(catched);
+    boolean catched = false;
+    try {
+      options = RPTestUtils.getOptions();
+      storage = new MemoryStorage();
+      handler = new RelyingPartyHandler(options, storage);
+      handler.getUserInfo("test", "test");
+    } catch (OIDCException e) {
+      catched = true;
+    } catch (Exception e) {
+      catched = true;
+    }
+    assertTrue(catched);
 
-		// Case
+    try {
+      options = RPTestUtils.getOptions();
+      storage = new MemoryStorage();
 
-		catched = false;
+      handler = new RelyingPartyHandler(options, storage);
+    } catch (Exception e) {
+      catched = true;
+    }
 
-		try {
-			handler.doGetUserInfo(" ", null);
-		}
-		catch (Exception e) {
-			catched = true;
-		}
+    assertTrue(catched);
 
-		assertTrue(catched);
+    // Case
 
-		// Case
+    catched = false;
 
-		catched = false;
+    try {
+      handler.doGetUserInfo(" ", null);
+    } catch (Exception e) {
+      catched = true;
+    }
 
-		try {
-			handler.doGetUserInfo("test", "test");
-		}
-		catch (Exception e) {
-			catched = true;
-		}
+    assertTrue(catched);
 
-		assertTrue(catched);
+    // Case
 
-		// Case
+    catched = false;
 
-		catched = false;
+    try {
+      handler.doGetUserInfo("test", "test");
+    } catch (Exception e) {
+      catched = true;
+    }
 
-		try {
-			AuthnRequest authnRequest = new AuthnRequest();
+    assertTrue(catched);
 
-			authnRequest.setState("test");
-			authnRequest.setStorageId("1");
-			authnRequest.setClientId("test");
+    // Case
 
-			storage.storeOIDCAuthnRequest(authnRequest);
+    catched = false;
 
-			handler.doGetUserInfo("test", "test");
-		}
-		catch (Exception e) {
-			catched = true;
-		}
+    try {
+      AuthnRequest authnRequest = new AuthnRequest();
 
-		assertTrue(catched);
+      authnRequest.setState("test");
+      authnRequest.setStorageId("1");
+      authnRequest.setClientId("test");
 
-		// Case
+      storage.storeOIDCAuthnRequest(authnRequest);
 
-		catched = false;
+      handler.doGetUserInfo("test", "test");
+    } catch (Exception e) {
+      catched = true;
+    }
 
-		try {
-			FederationEntity entity = new FederationEntity();
+    assertTrue(catched);
 
-			entity.setSubject("test");
-			entity.setActive(true);
+    // Case
 
-			storage.storeFederationEntity(entity);
+    catched = false;
 
-			handler.doGetUserInfo("test", "test");
-		}
-		catch (Exception e) {
-			catched = true;
-		}
+    try {
+      FederationEntity entity = new FederationEntity();
 
-		assertTrue(catched);
-	}
+      entity.setSubject("test");
+      entity.setActive(true);
 
-	@Test
-	public void test_performLogout() {
-		RelyingPartyOptions options = null;
-		RelyingPartyHandler handler = null;
-		MemoryStorage storage = null;
+      storage.storeFederationEntity(entity);
 
-		boolean catched = false;
+      handler.doGetUserInfo("test", "test");
+    } catch (Exception e) {
+      catched = true;
+    }
 
-		try {
-			options = RPTestUtils.getOptions();
-			storage = new MemoryStorage();
+    assertTrue(catched);
+  }
 
-			handler = new RelyingPartyHandler(options, storage);
-		}
-		catch (Exception e) {
-			catched = true;
-		}
+  @Test
+  public void test_performLogout() {
+    RelyingPartyOptions options = null;
+    RelyingPartyHandler handler = null;
+    MemoryStorage storage = null;
 
-		assertFalse(catched);
+    boolean catched = false;
 
-		// Case
+    try {
+      options = RPTestUtils.getOptions();
+      storage = new MemoryStorage();
 
-		catched = false;
+      handler = new RelyingPartyHandler(options, storage);
+    } catch (Exception e) {
+      catched = true;
+    }
 
-		try {
-			handler.performLogout(" ", null);
-		}
-		catch (Exception e) {
-			catched = true;
-		}
+    assertFalse(catched);
 
-		assertTrue(catched);
+    // Case
 
-		// Case
+    catched = false;
 
-		catched = false;
-		String res = null;
+    try {
+      handler.performLogout(" ", null);
+    } catch (Exception e) {
+      catched = true;
+    }
 
-		try {
-			res = handler.performLogout("test", null);
-		}
-		catch (Exception e) {
-			catched = true;
-		}
+    assertTrue(catched);
 
-		assertFalse(catched);
-		assertEquals(res, options.getLogoutRedirectURL());
+    // Case
 
-		// Case
+    catched = false;
+    String res = null;
 
-		catched = false;
+    try {
+      res = handler.performLogout("test", null);
+    } catch (Exception e) {
+      catched = true;
+    }
 
-		try {
-			AuthnToken authnToken = new AuthnToken();
+    assertFalse(catched);
+    assertEquals(res, options.getLogoutRedirectURL());
 
-			authnToken.setUserKey("1111");
-			authnToken.setAuthnRequestId("2222");
+    // Case
 
-			storage.storeOIDCAuthnToken(authnToken);
+    catched = false;
 
-			handler.performLogout("1111", null);
-		}
-		catch (Exception e) {
-			catched = true;
-		}
+    try {
+      AuthnToken authnToken = new AuthnToken();
 
-		assertTrue(catched);
+      authnToken.setUserKey("1111");
+      authnToken.setAuthnRequestId("2222");
 
-		// Case
+      storage.storeOIDCAuthnToken(authnToken);
 
-		catched = false;
-		res = "";
+      handler.performLogout("1111", null);
+    } catch (Exception e) {
+      catched = true;
+    }
 
-		try {
-			AuthnRequest authnRequest = new AuthnRequest();
+    assertTrue(catched);
 
-			authnRequest.setState("2222");
-			authnRequest.setStorageId("2222");
-			authnRequest.setClientId("test");
-			authnRequest.setProviderConfiguration(new JSONObject().toString());
+    // Case
 
-			storage.storeOIDCAuthnRequest(authnRequest);
+    catched = false;
+    res = "";
 
-			res = handler.performLogout("1111", null);
-		}
-		catch (Exception e) {
-			catched = true;
-		}
+    try {
+      AuthnRequest authnRequest = new AuthnRequest();
 
-		assertFalse(catched);
-		assertEquals(res, options.getLogoutRedirectURL());
+      authnRequest.setState("2222");
+      authnRequest.setStorageId("2222");
+      authnRequest.setClientId("test");
+      authnRequest.setProviderConfiguration(new JSONObject().toString());
 
-	}
+      storage.storeOIDCAuthnRequest(authnRequest);
+
+      res = handler.performLogout("1111", null);
+    } catch (Exception e) {
+      catched = true;
+    }
+
+    assertFalse(catched);
+    assertEquals(res, options.getLogoutRedirectURL());
+
+  }
 
 }

@@ -1,144 +1,87 @@
 package it.spid.cie.oidc.config;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-
-import org.json.JSONObject;
-
 import it.spid.cie.oidc.exception.ConfigException;
 import it.spid.cie.oidc.exception.OIDCException;
 import it.spid.cie.oidc.schemas.ClaimItem;
 import it.spid.cie.oidc.schemas.ClaimSection;
+import org.json.JSONObject;
 
-public class ClaimOptions {
+import java.util.*;
+import java.util.stream.Stream;
 
-	private Map<ClaimSection, Set<OptionItem>> itemsMap = new HashMap<>();
+import static it.spid.cie.oidc.schemas.ClaimSection.ID_TOKEN;
+import static it.spid.cie.oidc.schemas.ClaimSection.USER_INFO;
+import static java.util.Collections.emptySet;
+import static java.util.Collections.unmodifiableSet;
 
-	public void addSectionItem(
-			ClaimSection section, ClaimItem claimItem, Boolean essential)
-		throws OIDCException {
+public record ClaimOptions(Map<ClaimSection, Set<OptionItem>> claims) {
+  public ClaimOptions() {
+    this(new HashMap<>());
+  }
 
-		Set<OptionItem> items = itemsMap.get(section);
+  public void addSectionItem(ClaimSection section, ClaimItem claimItem, Boolean essential) throws OIDCException {
+    Set<OptionItem> options = claims.computeIfAbsent(section, _ -> new HashSet<>());
 
-		if (items == null) {
-			items = new HashSet<>();
-			itemsMap.put(section, items);
-		}
+    options.add(new OptionItem(claimItem, essential));
+  }
 
-		items.add(OptionItem.of(claimItem, essential));
-	}
+  public Set<OptionItem> getSectionItems(ClaimSection section) {
+    return unmodifiableSet(claims.getOrDefault(section, emptySet()));
+  }
 
-	public Set<OptionItem> getSectionItems(ClaimSection section) {
-		Set<OptionItem> items = itemsMap.get(section);
+  public boolean hasEssentialItem(String value) {
+    return Stream.concat(
+        getSectionItems(ID_TOKEN).stream(),
+        getSectionItems(USER_INFO).stream()
+      )
+      .anyMatch(it -> it.isEssential() && it.matchesClaimItem(value));
+  }
 
-		if (items != null) {
-			return Collections.unmodifiableSet(items);
-		}
+  public boolean isEmpty() {
+    return claims.isEmpty();
+  }
 
-		return Collections.emptySet();
-	}
+  public JSONObject asJson() {
+    JSONObject idToken = new JSONObject();
 
-	public boolean hasEssentialItem(String value) {
-		for (OptionItem item : getSectionItems(ClaimSection.ID_TOKEN)) {
-			if (item.isEssential() && item.matchClaimItem(value)) {
-				return true;
-			}
-		}
+    for (OptionItem option : getSectionItems(ID_TOKEN)) {
+      JSONObject value = new JSONObject();
 
-		for (OptionItem item : getSectionItems(ClaimSection.USER_INFO)) {
-			if (item.isEssential() && item.matchClaimItem(value)) {
-				return true;
-			}
-		}
+      option.essential.ifPresent(essential -> value.put("essential", essential));
 
-		return false;
-	}
+      idToken.put(option.claimItem().getAlias(), value);
+    }
 
-	public boolean isEmpty() {
-		return itemsMap.isEmpty();
-	}
+    JSONObject userInfo = new JSONObject();
 
-	public JSONObject toJSON() {
-		JSONObject idToken = new JSONObject();
+    for (OptionItem option : getSectionItems(USER_INFO)) {
+      JSONObject value = new JSONObject();
 
-		for (OptionItem item : getSectionItems(ClaimSection.ID_TOKEN)) {
-			JSONObject value = new JSONObject();
+      option.essential().ifPresent(essential -> value.put("essential", essential));
 
-			if (item.getEssential().isPresent()) {
-				value.put("essential", item.getEssential().get());
-			}
+      userInfo.put(option.claimItem().getAlias(), value);
+    }
 
-			idToken.put(item.getClaimItem().getAlias(), value);
-		}
+    return new JSONObject()
+      .put("id_token", idToken)
+      .put("userinfo", userInfo);
+  }
 
-		JSONObject userInfo = new JSONObject();
+  public record OptionItem(ClaimItem claimItem, Optional<Boolean> essential) {
+    public OptionItem(ClaimItem claimItem, Boolean essential) throws OIDCException {
+      if (claimItem == null) throw new ConfigException("claimItem is null");
 
-		for (OptionItem item : getSectionItems(ClaimSection.USER_INFO)) {
-			JSONObject value = new JSONObject();
+      this(claimItem, Optional.ofNullable(essential));
+    }
 
-			if (item.getEssential().isPresent()) {
-				value.put("essential", item.getEssential().get());
-			}
+    public boolean isEssential() {
+      return essential.orElse(false);
 
-			userInfo.put(item.getClaimItem().getAlias(), value);
-		}
+    }
 
-		return new JSONObject()
-			.put("id_token", idToken)
-			.put("userinfo", userInfo);
-	}
-
-	public static class OptionItem {
-
-		private final Boolean essential;
-		private final ClaimItem claimItem;
-
-		public static OptionItem of(ClaimItem claimItem, Boolean essential)
-			throws OIDCException {
-
-			return new OptionItem(claimItem, essential);
-		}
-
-		public OptionItem(ClaimItem claimItem, Boolean essential) throws OIDCException {
-			if (claimItem == null) {
-				throw new ConfigException("claimItem is null");
-			}
-
-			this.claimItem = claimItem;
-			this.essential = essential;
-		}
-
-		public Optional<Boolean> getEssential() {
-			return Optional.ofNullable(essential);
-		}
-
-		public ClaimItem getClaimItem() {
-			return claimItem;
-		}
-
-		public boolean isEssential() {
-			if (essential != null) {
-				return essential;
-			}
-
-			return false;
-		}
-
-		public boolean matchClaimItem(String value) {
-			if (Objects.equals(value, claimItem.getName()) ||
-				Objects.equals(value, claimItem.getAlias())) {
-
-				return true;
-			}
-
-			return false;
-		}
-
-	}
+    public boolean matchesClaimItem(String value) {
+      return Objects.equals(value, claimItem.getName()) || Objects.equals(value, claimItem.getAlias());
+    }
+  }
 
 }

@@ -4,44 +4,44 @@ import it.spid.cie.oidc.exception.OIDCException;
 
 public enum GrantType {
 
-	REFRESH_TOKEN("refresh_token"),
-	AUTHORIZATION_CODE("authorization_code");
+  REFRESH_TOKEN("refresh_token"),
+  AUTHORIZATION_CODE("authorization_code");
 
-	private final String value;
+  private final String value;
 
-	public static GrantType parse(String value) {
-		if (value != null) {
-			for (GrantType elem : GrantType.values()) {
-				if (value.equals(elem.value())) {
-					return elem;
-				}
-			}
-		}
+  private GrantType(String value) {
+    this.value = value;
+  }
 
-		return null;
-	}
+  public static GrantType parse(String value) {
+    if (value != null) {
+      for (GrantType elem : GrantType.values()) {
+        if (value.equals(elem.value())) {
+          return elem;
+        }
+      }
+    }
 
-	public static GrantType parse(String value, boolean strict) throws OIDCException {
-		GrantType result = parse(value);
+    return null;
+  }
 
-		if (result == null && strict) {
-			throw new OIDCException("Invalid value: " + value);
-		}
+  public static GrantType parse(String value, boolean strict) throws OIDCException {
+    GrantType result = parse(value);
 
-		return result;
-	}
+    if (result == null && strict) {
+      throw new OIDCException("Invalid value: " + value);
+    }
 
-	@Override
-	public String toString() {
-		return value();
-	}
+    return result;
+  }
 
-	public String value() {
-		return value;
-	}
+  @Override
+  public String toString() {
+    return value();
+  }
 
-	private GrantType(String value) {
-		this.value = value;
-	}
+  public String value() {
+    return value;
+  }
 
 }

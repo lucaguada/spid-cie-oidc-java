@@ -6,9 +6,9 @@ import it.spid.cie.oidc.model.AuthnToken;
 
 public class MockRelyingPartyLogoutCallback implements RelyingPartyLogoutCallback {
 
-	@Override
-	public void logout(String userKey, AuthnRequest authnRequest, AuthnToken authnToken) {
-		// TODO Auto-generated method stub
-	}
+  @Override
+  public void logout(String userKey, AuthnRequest authnRequest, AuthnToken authnToken) {
+    // TODO Auto-generated method stub
+  }
 
 }

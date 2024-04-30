@@ -4,37 +4,37 @@ import java.time.LocalDateTime;
 
 public abstract class BaseModel {
 
-	private String storageId;
-	private LocalDateTime createDate;
-	private LocalDateTime modifiedDate;
+  private String storageId;
+  private LocalDateTime createDate;
+  private LocalDateTime modifiedDate;
 
-	public LocalDateTime getCreateDate() {
-		return createDate;
-	}
+  protected BaseModel() {
+    this.createDate = LocalDateTime.now();
+    this.modifiedDate = createDate;
+  }
 
-	public LocalDateTime getModifiedDate() {
-		return modifiedDate;
-	}
+  public LocalDateTime getCreateDate() {
+    return createDate;
+  }
 
-	public String getStorageId() {
-		return storageId;
-	}
+  public void setCreateDate(LocalDateTime createDate) {
+    this.createDate = createDate;
+  }
 
-	public void setCreateDate(LocalDateTime createDate) {
-		this.createDate = createDate;
-	}
+  public LocalDateTime getModifiedDate() {
+    return modifiedDate;
+  }
 
-	public void setModifiedDate(LocalDateTime modifiedDate) {
-		this.modifiedDate = modifiedDate;
-	}
+  public void setModifiedDate(LocalDateTime modifiedDate) {
+    this.modifiedDate = modifiedDate;
+  }
 
-	public void setStorageId(String storageId) {
-		this.storageId = storageId;
-	}
+  public String getStorageId() {
+    return storageId;
+  }
 
-	protected BaseModel() {
-		this.createDate = LocalDateTime.now();
-		this.modifiedDate = createDate;
-	}
+  public void setStorageId(String storageId) {
+    this.storageId = storageId;
+  }
 
 }

@@ -1,179 +1,168 @@
 package it.spid.cie.oidc.handler.extras;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
 import it.spid.cie.oidc.exception.PersistenceException;
-import it.spid.cie.oidc.model.AuthnRequest;
-import it.spid.cie.oidc.model.AuthnToken;
-import it.spid.cie.oidc.model.CachedEntityInfo;
-import it.spid.cie.oidc.model.FederationEntity;
-import it.spid.cie.oidc.model.TrustChain;
+import it.spid.cie.oidc.model.*;
 import it.spid.cie.oidc.persistence.PersistenceAdapter;
+
+import java.util.*;
 
 public class MemoryStorage implements PersistenceAdapter {
 
-	@Override
-	public AuthnRequest fetchAuthnRequest(String storageId) throws PersistenceException {
-		return authnRequests.get(storageId);
-	}
+  private Map<String, FederationEntity> federationEntities = new HashMap<>();
+  private Map<String, TrustChain> trustChains = new HashMap<>();
+  private Map<String, CachedEntityInfo> cachedEntities = new HashMap<>();
+  private Map<String, AuthnRequest> authnRequests = new HashMap<>();
+  private Map<String, AuthnToken> authnTokens = new HashMap<>();
 
-	public AuthnToken fetchAuthnToken(String authnRequestId) {
-		return authnTokens.get(authnRequestId);
-	}
+  @Override
+  public AuthnRequest fetchAuthnRequest(String storageId) throws PersistenceException {
+    return authnRequests.get(storageId);
+  }
 
-	@Override
-	public CachedEntityInfo fetchEntityInfo(String subject, String issuer)
-		throws PersistenceException {
+  public AuthnToken fetchAuthnToken(String authnRequestId) {
+    return authnTokens.get(authnRequestId);
+  }
 
-		CachedEntityInfo entityInfo = cachedEntities.get(subject);
+  @Override
+  public CachedEntityInfo fetchEntityInfo(String subject, String issuer)
+    throws PersistenceException {
 
-		if (entityInfo != null && Objects.equals(issuer, entityInfo.getIssuer())) {
-			return entityInfo;
-		}
+    CachedEntityInfo entityInfo = cachedEntities.get(subject);
 
-		return null;
-	}
+    if (entityInfo != null && Objects.equals(issuer, entityInfo.getIssuer())) {
+      return entityInfo;
+    }
 
-	@Override
-	public FederationEntity fetchFederationEntity(
-			String subject, String entityType, boolean active)
-		throws PersistenceException {
+    return null;
+  }
 
-		FederationEntity entity = fetchFederationEntity(subject, active);
+  @Override
+  public FederationEntity fetchFederationEntity(
+    String subject, String entityType, boolean active)
+    throws PersistenceException {
 
-		if (entity != null && Objects.equals(entity.getEntityType(), entityType)) {
-			return entity;
-		}
+    FederationEntity entity = fetchFederationEntity(subject, active);
 
-		return null;
-	}
+    if (entity != null && Objects.equals(entity.getEntityType(), entityType)) {
+      return entity;
+    }
 
-	@Override
-	public FederationEntity fetchFederationEntity(String subject, boolean active)
-		throws PersistenceException {
+    return null;
+  }
 
-		FederationEntity entity = doFetchFederationEntity(subject);
+  @Override
+  public FederationEntity fetchFederationEntity(String subject, boolean active)
+    throws PersistenceException {
 
-		if (entity != null && entity.isActive() == active) {
-			return entity;
-		}
+    FederationEntity entity = doFetchFederationEntity(subject);
 
-		return null;
-	}
+    if (entity != null && entity.isActive() == active) {
+      return entity;
+    }
 
-	@Override
-	public TrustChain fetchTrustChain(String subject, String trustAnchor)
-		throws PersistenceException {
+    return null;
+  }
 
-		String key = subject + "|" + trustAnchor;
+  @Override
+  public TrustChain fetchTrustChain(String subject, String trustAnchor)
+    throws PersistenceException {
 
-		return trustChains.get(key);
-	}
+    String key = subject + "|" + trustAnchor;
 
-	@Override
-	public TrustChain fetchTrustChain(
-			String subject, String trustAnchor, String metadataType)
-		throws PersistenceException {
+    return trustChains.get(key);
+  }
 
-		TrustChain trustChain = fetchTrustChain(subject, trustAnchor);
+  @Override
+  public TrustChain fetchTrustChain(
+    String subject, String trustAnchor, String metadataType)
+    throws PersistenceException {
 
-		if (trustChain != null && Objects.equals(trustChain.getType(), metadataType)) {
-			return trustChain;
-		}
+    TrustChain trustChain = fetchTrustChain(subject, trustAnchor);
 
-		return null;
-	}
+    if (trustChain != null && Objects.equals(trustChain.getType(), metadataType)) {
+      return trustChain;
+    }
 
-	@Override
-	public List<AuthnRequest> findAuthnRequests(String state)
-		throws PersistenceException {
+    return null;
+  }
 
-		AuthnRequest authnRequest = authnRequests.get(state);
+  @Override
+  public List<AuthnRequest> findAuthnRequests(String state)
+    throws PersistenceException {
 
-		if (authnRequest != null) {
-			return Arrays.asList(authnRequest);
-		}
-		else {
-			return Collections.emptyList();
-		}
-	}
+    AuthnRequest authnRequest = authnRequests.get(state);
 
-	@Override
-	public List<AuthnToken> findAuthnTokens(String userKey) throws PersistenceException {
-		List<AuthnToken> result = new ArrayList<>();
+    if (authnRequest != null) {
+      return Arrays.asList(authnRequest);
+    } else {
+      return Collections.emptyList();
+    }
+  }
 
-		for (AuthnToken authnToken : authnTokens.values()) {
-			if (Objects.equals(authnToken.getUserKey(), userKey)) {
-				result.add(authnToken);
-			}
-		}
+  @Override
+  public List<AuthnToken> findAuthnTokens(String userKey) throws PersistenceException {
+    List<AuthnToken> result = new ArrayList<>();
 
-		return result;
-	}
+    for (AuthnToken authnToken : authnTokens.values()) {
+      if (Objects.equals(authnToken.getUserKey(), userKey)) {
+        result.add(authnToken);
+      }
+    }
 
-	@Override
-	public CachedEntityInfo storeEntityInfo(CachedEntityInfo entityInfo)
-		throws PersistenceException {
+    return result;
+  }
 
-		cachedEntities.put(entityInfo.getSubject(), entityInfo);
+  @Override
+  public CachedEntityInfo storeEntityInfo(CachedEntityInfo entityInfo)
+    throws PersistenceException {
 
-		return entityInfo;
-	}
+    cachedEntities.put(entityInfo.getSubject(), entityInfo);
 
-	@Override
-	public FederationEntity storeFederationEntity(FederationEntity federationEntity)
-		throws PersistenceException {
+    return entityInfo;
+  }
 
-		federationEntities.put(federationEntity.getSubject(), federationEntity);
+  @Override
+  public FederationEntity storeFederationEntity(FederationEntity federationEntity)
+    throws PersistenceException {
 
-		return federationEntity;
-	}
+    federationEntities.put(federationEntity.getSubject(), federationEntity);
 
-	@Override
-	public AuthnRequest storeOIDCAuthnRequest(AuthnRequest authnRequest)
-		throws PersistenceException {
+    return federationEntity;
+  }
 
-		authnRequest.setStorageId(authnRequest.getState());
+  @Override
+  public AuthnRequest storeOIDCAuthnRequest(AuthnRequest authnRequest)
+    throws PersistenceException {
 
-		authnRequests.put(authnRequest.getState(), authnRequest);
+    authnRequest.setStorageId(authnRequest.getState());
 
-		return authnRequest;
-	}
+    authnRequests.put(authnRequest.getState(), authnRequest);
 
-	@Override
-	public AuthnToken storeOIDCAuthnToken(AuthnToken authnToken)
-		throws PersistenceException {
+    return authnRequest;
+  }
 
-		authnTokens.put(authnToken.getAuthnRequestId(), authnToken);
+  @Override
+  public AuthnToken storeOIDCAuthnToken(AuthnToken authnToken)
+    throws PersistenceException {
 
-		return authnToken;
-	}
+    authnTokens.put(authnToken.getAuthnRequestId(), authnToken);
 
-	@Override
-	public TrustChain storeTrustChain(TrustChain trustChain) throws PersistenceException {
-		String key = trustChain.getSubject() + "|" + trustChain.getTrustAnchor();
+    return authnToken;
+  }
 
-		trustChains.put(key, trustChain);
+  @Override
+  public TrustChain storeTrustChain(TrustChain trustChain) throws PersistenceException {
+    String key = trustChain.getSubject() + "|" + trustChain.getTrustAnchor();
 
-		return trustChain;
-	}
+    trustChains.put(key, trustChain);
 
-	protected FederationEntity doFetchFederationEntity(String subject)
-		throws PersistenceException {
+    return trustChain;
+  }
 
-		return federationEntities.get(subject);
-	}
+  protected FederationEntity doFetchFederationEntity(String subject)
+    throws PersistenceException {
 
-	private Map<String, FederationEntity> federationEntities = new HashMap<>();
-	private Map<String, TrustChain> trustChains = new HashMap<>();
-	private Map<String, CachedEntityInfo> cachedEntities = new HashMap<>();
-	private Map<String, AuthnRequest> authnRequests = new HashMap<>();
-	private Map<String, AuthnToken> authnTokens = new HashMap<>();
+    return federationEntities.get(subject);
+  }
 
 }

@@ -4,46 +4,46 @@ import it.spid.cie.oidc.exception.OIDCException;
 
 public enum Scope {
 
-	OPEN_ID("openid"),
-	OFFLINE_ACCESS("offline_access"),
-	PROFILE("profile"),
-	EMAIL("email");
+  OPEN_ID("openid"),
+  OFFLINE_ACCESS("offline_access"),
+  PROFILE("profile"),
+  EMAIL("email");
 
-	private final String value;
+  private final String value;
 
-	public static Scope parse(String value) {
-		if (value != null) {
-			for (Scope elem : Scope.values()) {
-				if (value.equals(elem.value())) {
-					return elem;
-				}
-			}
-		}
+  private Scope(String value) {
+    this.value = value;
+  }
 
-		return null;
-	}
+  public static Scope parse(String value) {
+    if (value != null) {
+      for (Scope elem : Scope.values()) {
+        if (value.equals(elem.value())) {
+          return elem;
+        }
+      }
+    }
 
-	public static Scope parse(String value, boolean strict) throws OIDCException {
-		Scope result = parse(value);
+    return null;
+  }
 
-		if (result == null && strict) {
-			throw new OIDCException("Invalid value: " + value);
-		}
+  public static Scope parse(String value, boolean strict) throws OIDCException {
+    Scope result = parse(value);
 
-		return result;
-	}
+    if (result == null && strict) {
+      throw new OIDCException("Invalid value: " + value);
+    }
 
-	public String value() {
-		return value;
-	}
+    return result;
+  }
 
-	@Override
-	public String toString() {
-		return value();
-	}
+  public String value() {
+    return value;
+  }
 
-	private Scope(String value) {
-		this.value = value;
-	}
+  @Override
+  public String toString() {
+    return value();
+  }
 
 }

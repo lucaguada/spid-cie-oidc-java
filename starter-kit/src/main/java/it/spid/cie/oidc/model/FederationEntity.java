@@ -3,10 +3,9 @@ package it.spid.cie.oidc.model;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.KeyUse;
+import it.spid.cie.oidc.config.GlobalOptions;
 import it.spid.cie.oidc.helper.JWTHelper;
 import org.json.JSONObject;
-
-import it.spid.cie.oidc.config.GlobalOptions;
 
 /**
  * This class describes a "Federation Entity" (Federation Entity Configuration). It
@@ -17,152 +16,153 @@ import it.spid.cie.oidc.config.GlobalOptions;
  */
 public class FederationEntity extends BaseModel {
 
-	/**
-	 * URL that identifies this Entity in the Federation. Inside {@link EntityConfiguration}
-	 * this value will be used as {@code sub} and/or {@code iss}.
-	 */
-	private String sub;
+  /**
+   * URL that identifies this Entity in the Federation. Inside {@link EntityConfiguration}
+   * this value will be used as {@code sub} and/or {@code iss}.
+   */
+  private String sub;
 
-	/**
-	 * how many minutes from now() an issued statement must expire
-	 */
-	private int defaultExpireMinutes;
-	private String defaultSignatureAlg = GlobalOptions.DEFAULT_SIGNING_ALG;
-	private String authorityHints;
-	private String jwksFed;
-	private String jwksCore;
-	private String trustMarks;
-	private String trustMarkIssuers;
-	private String metadata;
-	private boolean active = false;
-	private String constraints;
-	private String entityType;
+  /**
+   * how many minutes from now() an issued statement must expire
+   */
+  private int defaultExpireMinutes;
+  private String defaultSignatureAlg = GlobalOptions.DEFAULT_SIGNING_ALG;
+  private String authorityHints;
+  private String jwksFed;
+  private String jwksCore;
+  private String trustMarks;
+  private String trustMarkIssuers;
+  private String metadata;
+  private boolean active = false;
+  private String constraints;
+  private String entityType;
 
-	public String getAuthorityHints() {
-		return authorityHints;
-	}
+  public String getAuthorityHints() {
+    return authorityHints;
+  }
 
-	public String getConstraints() {
-		return constraints;
-	}
+  public void setAuthorityHints(String authorityHints) {
+    this.authorityHints = authorityHints;
+  }
 
-	public String getEntityType() {
-		return entityType;
-	}
+  public String getConstraints() {
+    return constraints;
+  }
 
-	public int getDefaultExpireMinutes() {
-		return defaultExpireMinutes;
-	}
+  public void setConstraints(String constraints) {
+    this.constraints = constraints;
+  }
 
-	public String getDefaultSignatureAlg() {
-		return defaultSignatureAlg;
-	}
+  public String getEntityType() {
+    return entityType;
+  }
 
-	public String getJwksFed() {
-		return jwksFed;
-	}
-	public String getJwksCore() {
-		return jwksCore;
-	}
-	public String getJwksCoreByUse(KeyUse use) {
-		String jwkCore="";
-		try {
-			JWKSet keys = JWTHelper.getJWKSetFromJSON(jwksCore);
-			JWK jwk = keys.getKeys().stream()
-					.filter(key -> key.getKeyUse() == use)
-					.findFirst()
-					.orElse(null);
-			jwkCore = "["+jwk.toString()+"]";
-		}
-		catch (Exception e) {
-			return null;
-		}
-		return jwkCore;
-	}
-	public String getMetadata() {
-		return metadata;
-	}
+  public void setEntityType(String entityType) {
+    this.entityType = entityType;
+  }
 
-	public JSONObject getMetadataValue(String key) {
-		try {
-			JSONObject json = new JSONObject(metadata);
+  public int getDefaultExpireMinutes() {
+    return defaultExpireMinutes;
+  }
 
-			return json.optJSONObject(key);
-		}
-		catch (Exception e) {
-			return null;
-		}
-	}
+  public void setDefaultExpireMinutes(int defaultExpireMinutes) {
+    this.defaultExpireMinutes = defaultExpireMinutes;
+  }
 
-	public String getSubject() {
-		return sub;
-	}
+  public String getDefaultSignatureAlg() {
+    return defaultSignatureAlg;
+  }
 
-	public String getTrustMarks() {
-		return trustMarks;
-	}
+  public void setDefaultSignatureAlg(String defaultSignatureAlg) {
+    this.defaultSignatureAlg = defaultSignatureAlg;
+  }
 
-	public String gettrustMarkIssuers() {
-		return trustMarkIssuers;
-	}
+  public String getJwksFed() {
+    return jwksFed;
+  }
 
-	public boolean isActive() {
-		return active;
-	}
+  public void setJwksFed(String jwksFed) {
+    this.jwksFed = jwksFed;
+  }
 
-	public FederationEntity setActive(boolean active) {
-		this.active = active;
+  public String getJwksCore() {
+    return jwksCore;
+  }
 
-		return this;
-	}
+  public void setJwksCore(String jwksCore) {
+    this.jwksCore = jwksCore;
+  }
 
-	public void setAuthorityHints(String authorityHints) {
-		this.authorityHints = authorityHints;
-	}
+  public String getJwksCoreByUse(KeyUse use) {
+    String jwkCore = "";
+    try {
+      JWKSet keys = JWTHelper.getJWKSetFromJSON(jwksCore);
+      JWK jwk = keys.getKeys().stream()
+        .filter(key -> key.getKeyUse() == use)
+        .findFirst()
+        .orElse(null);
+      jwkCore = "[" + jwk.toString() + "]";
+    } catch (Exception e) {
+      return null;
+    }
+    return jwkCore;
+  }
 
-	public void setConstraints(String constraints) {
-		this.constraints = constraints;
-	}
+  public String getMetadata() {
+    return metadata;
+  }
 
-	public void setDefaultExpireMinutes(int defaultExpireMinutes) {
-		this.defaultExpireMinutes = defaultExpireMinutes;
-	}
+  public FederationEntity setMetadata(String metadata) {
+    this.metadata = metadata;
 
-	public void setDefaultSignatureAlg(String defaultSignatureAlg) {
-		this.defaultSignatureAlg = defaultSignatureAlg;
-	}
+    return this;
+  }
 
-	public void setEntityType(String entityType) {
-		this.entityType = entityType;
-	}
+  public JSONObject getMetadataValue(String key) {
+    try {
+      JSONObject json = new JSONObject(metadata);
 
-	public void setJwksFed(String jwksFed) {
-		this.jwksFed = jwksFed;
-	}
+      return json.optJSONObject(key);
+    } catch (Exception e) {
+      return null;
+    }
+  }
 
-	public void setJwksCore(String jwksCore) {
-		this.jwksCore = jwksCore;
-	}
-	
-	public FederationEntity setMetadata(String metadata) {
-		this.metadata = metadata;
+  public String getSubject() {
+    return sub;
+  }
 
-		return this;
-	}
+  public FederationEntity setSubject(String subject) {
+    this.sub = subject;
 
-	public FederationEntity setSubject(String subject) {
-		this.sub = subject;
+    return this;
+  }
 
-		return this;
-	}
+  public String getTrustMarks() {
+    return trustMarks;
+  }
 
-	public void setTrustMarks(String trustMarks) {
-		this.trustMarks = trustMarks;
-	}
+  public void setTrustMarks(String trustMarks) {
+    this.trustMarks = trustMarks;
+  }
 
-	public void settrustMarkIssuers(String trustMarkIssuers) {
-		this.trustMarkIssuers = trustMarkIssuers;
-	}
+  public String gettrustMarkIssuers() {
+    return trustMarkIssuers;
+  }
+
+  public boolean isActive() {
+    return active;
+  }
+
+  public FederationEntity setActive(boolean active) {
+    this.active = active;
+
+    return this;
+  }
+
+  public void settrustMarkIssuers(String trustMarkIssuers) {
+    this.trustMarkIssuers = trustMarkIssuers;
+  }
 
 
 }

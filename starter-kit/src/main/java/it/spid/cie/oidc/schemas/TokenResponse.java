@@ -1,78 +1,77 @@
 package it.spid.cie.oidc.schemas;
 
-import java.util.regex.Pattern;
-
-import org.json.JSONObject;
-
 import it.spid.cie.oidc.exception.OIDCException;
 import it.spid.cie.oidc.exception.SchemaException;
+import org.json.JSONObject;
+
+import java.util.regex.Pattern;
 
 public class TokenResponse {
 
-	private static Pattern TOKEN_PATTERN = Pattern.compile(
-		"^[a-zA-Z0-9_\\-]+\\.[a-zA-Z0-9_\\-]+\\.[a-zA-Z0-9_\\-]+");
+  private static Pattern TOKEN_PATTERN = Pattern.compile(
+    "^[a-zA-Z0-9_\\-]+\\.[a-zA-Z0-9_\\-]+\\.[a-zA-Z0-9_\\-]+");
 
-	private final String accessToken;
-	private final String tokenType;
-	private final int expiresIn;
-	private final String idToken;
+  private final String accessToken;
+  private final String tokenType;
+  private final int expiresIn;
+  private final String idToken;
 
-	public static TokenResponse of(JSONObject json) throws OIDCException {
-		if (json == null || json.isEmpty()) {
-			throw new SchemaException.Validation("Empty source");
-		}
+  protected TokenResponse(
+    String accessToken, String tokenType, int expiresIn, String idToken)
+    throws OIDCException {
 
-		return new TokenResponse(
-			json.optString("access_token"), json.optString("token_type"),
-			json.optInt("espires_in"), json.optString("id_token"));
-	}
+    if (!TOKEN_PATTERN.matcher(accessToken).matches()) {
+      throw new SchemaException.Validation("Invalid access token");
+    }
+    if (!"Bearer".equals(tokenType)) {
+      throw new SchemaException.Validation("Invalid token type");
+    }
+    if (!TOKEN_PATTERN.matcher(idToken).matches()) {
+      throw new SchemaException.Validation("Invalid id token");
+    }
 
-	public String getAccessToken() {
-		return accessToken;
-	}
+    this.accessToken = accessToken;
+    this.tokenType = tokenType;
+    this.expiresIn = expiresIn;
+    this.idToken = idToken;
+  }
 
-	public String getTokenType() {
-		return tokenType;
-	}
+  public static TokenResponse of(JSONObject json) throws OIDCException {
+    if (json == null || json.isEmpty()) {
+      throw new SchemaException.Validation("Empty source");
+    }
 
-	public int getExpiresIn() {
-		return expiresIn;
-	}
+    return new TokenResponse(
+      json.optString("access_token"), json.optString("token_type"),
+      json.optInt("espires_in"), json.optString("id_token"));
+  }
 
-	public String getIdToken() {
-		return idToken;
-	}
+  public String getAccessToken() {
+    return accessToken;
+  }
 
-	public JSONObject toJSON() {
-		return new JSONObject()
-			.put("access_token", accessToken)
-			.put("token_type", tokenType)
-			.put("expiresIn", expiresIn)
-			.put("id_token", idToken);
-	}
+  public String getTokenType() {
+    return tokenType;
+  }
 
-	public String toString() {
-		return toJSON().toString();
-	}
+  public int getExpiresIn() {
+    return expiresIn;
+  }
 
-	protected TokenResponse(
-			String accessToken, String tokenType, int expiresIn, String idToken)
-		throws OIDCException {
+  public String getIdToken() {
+    return idToken;
+  }
 
-		if (!TOKEN_PATTERN.matcher(accessToken).matches()) {
-			throw new SchemaException.Validation("Invalid access token");
-		}
-		if (!"Bearer".equals(tokenType)) {
-			throw new SchemaException.Validation("Invalid token type");
-		}
-		if (!TOKEN_PATTERN.matcher(idToken).matches()) {
-			throw new SchemaException.Validation("Invalid id token");
-		}
+  public JSONObject toJSON() {
+    return new JSONObject()
+      .put("access_token", accessToken)
+      .put("token_type", tokenType)
+      .put("expiresIn", expiresIn)
+      .put("id_token", idToken);
+  }
 
-		this.accessToken = accessToken;
-		this.tokenType = tokenType;
-		this.expiresIn = expiresIn;
-		this.idToken = idToken;
-	}
+  public String toString() {
+    return toJSON().toString();
+  }
 
 }

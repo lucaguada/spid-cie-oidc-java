@@ -4,44 +4,44 @@ import it.spid.cie.oidc.exception.OIDCException;
 
 public enum ResponseMode {
 
-	FORM_POST("form_post"),
-	QUERY("query");
+  FORM_POST("form_post"),
+  QUERY("query");
 
-	private final String value;
+  private final String value;
 
-	public static ResponseMode parse(String value) {
-		if (value != null) {
-			for (ResponseMode elem : ResponseMode.values()) {
-				if (value.equals(elem.value())) {
-					return elem;
-				}
-			}
-		}
+  private ResponseMode(String value) {
+    this.value = value;
+  }
 
-		return null;
-	}
+  public static ResponseMode parse(String value) {
+    if (value != null) {
+      for (ResponseMode elem : ResponseMode.values()) {
+        if (value.equals(elem.value())) {
+          return elem;
+        }
+      }
+    }
 
-	public static ResponseMode parse(String value, boolean strict) throws OIDCException {
-		ResponseMode result = parse(value);
+    return null;
+  }
 
-		if (result == null && strict) {
-			throw new OIDCException("Invalid value: " + value);
-		}
+  public static ResponseMode parse(String value, boolean strict) throws OIDCException {
+    ResponseMode result = parse(value);
 
-		return result;
-	}
+    if (result == null && strict) {
+      throw new OIDCException("Invalid value: " + value);
+    }
 
-	@Override
-	public String toString() {
-		return value();
-	}
+    return result;
+  }
 
-	public String value() {
-		return value;
-	}
+  @Override
+  public String toString() {
+    return value();
+  }
 
-	private ResponseMode(String value) {
-		this.value =value;
-	}
+  public String value() {
+    return value;
+  }
 
 }
