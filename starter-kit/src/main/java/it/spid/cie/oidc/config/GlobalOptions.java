@@ -6,7 +6,9 @@ import it.spid.cie.oidc.util.ArrayUtil;
 import it.spid.cie.oidc.util.Validator;
 
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Stream;
 
 public class GlobalOptions<GLOBAL_OPTIONS extends GlobalOptions<GLOBAL_OPTIONS>> {
 
@@ -14,11 +16,11 @@ public class GlobalOptions<GLOBAL_OPTIONS extends GlobalOptions<GLOBAL_OPTIONS>>
 
   public static final String DEFAULT_SIGNING_ALG = "RS256";
 
-  public static final String[] SUPPORTED_ENCRYPTION_ENCODINGS = { "A128CBC-HS256", "A192CBC-HS384", "A256CBC-HS512", "A128GCM", "A192GCM", "A256GCM" };
+  public static final String[] SUPPORTED_ENCRYPTION_ENCODINGS = {"A128CBC-HS256", "A192CBC-HS384", "A256CBC-HS512", "A128GCM", "A192GCM", "A256GCM"};
 
-  public static final String[] SUPPORTED_ENCRYPTION_ALGS = { "RSA-OAEP", "RSA-OAEP-256", "ECDH-ES", "ECDH-ES+A128KW", "ECDH-ES+A192KW", "ECDH-ES+A256KW" };
+  public static final String[] SUPPORTED_ENCRYPTION_ALGS = {"RSA-OAEP", "RSA-OAEP-256", "ECDH-ES", "ECDH-ES+A128KW", "ECDH-ES+A192KW", "ECDH-ES+A256KW"};
 
-  public static final String[] SUPPORTED_SIGNING_ALGS = { "RS256", "RS384", "RS512", "ES256", "ES384", "ES512" };
+  public static final String[] SUPPORTED_SIGNING_ALGS = {"RS256", "RS384", "RS512", "ES256", "ES384", "ES512"};
 
   private String jweDefaultAlgorithm = "RSA-OAEP";
   private String jweDefaultEncryption = "A256CBC-HS512";
@@ -35,70 +37,51 @@ public class GlobalOptions<GLOBAL_OPTIONS extends GlobalOptions<GLOBAL_OPTIONS>>
   }
 
   @SuppressWarnings("unchecked")
-  private GLOBAL_OPTIONS self() { return switch (this) {
-    case GLOBAL_OPTIONS it -> it;
-    
-  }; }
+  private GLOBAL_OPTIONS self() {return (GLOBAL_OPTIONS) this;}
 
-  @SuppressWarnings("unchecked")
   public GLOBAL_OPTIONS setDefaultJWEAlgorithm(String algorithm) {
-    if (!Validator.isNullOrEmpty(algorithm)) {
-      jweDefaultAlgorithm = algorithm;
-    }
-
-    return (GLOBAL_OPTIONS) this;
+    if (Objects.isNull(algorithm) || algorithm.isEmpty() || algorithm.isBlank()) return self();
+    jweDefaultAlgorithm = algorithm;
+    return self();
   }
 
   public String getDefaultJWEEncryption() {
     return jweDefaultEncryption;
   }
 
-  @SuppressWarnings("unchecked")
-  public GLOBAL_OPTIONS setDefaultJWEEncryption(String encMethod) {
-    if (!Validator.isNullOrEmpty(encMethod)) {
-      jweDefaultEncryption = encMethod;
-    }
-
-    return (GLOBAL_OPTIONS) this;
+  public GLOBAL_OPTIONS setDefaultJWEEncryption(String encryption) {
+    if (Objects.isNull(encryption) || encryption.isEmpty() || encryption.isBlank()) return self();
+    jweDefaultEncryption = encryption;
+    return self();
   }
 
   public String getDefaultJWSAlgorithm() {
     return jwsDefaultAlgorithm;
   }
 
-  @SuppressWarnings("unchecked")
   public GLOBAL_OPTIONS setDefaultJWSAlgorithm(String algorithm) {
-    if (!Validator.isNullOrEmpty(algorithm)) {
-      jwsDefaultAlgorithm = algorithm;
-    }
-
-    return (GLOBAL_OPTIONS) this;
+    if (Objects.isNull(algorithm) || algorithm.isEmpty() || algorithm.isBlank()) return self();
+    jwsDefaultAlgorithm = algorithm;
+    return self();
   }
 
   public Set<String> getAllowedEncryptionAlgs() {
     return Collections.unmodifiableSet(allowedEncryptionAlgs);
   }
 
-  @SuppressWarnings("unchecked")
   public GLOBAL_OPTIONS setAllowedEncryptionAlgs(String... values) {
-    if (values.length > 0) {
-      allowedEncryptionAlgs = ArrayUtil.asSet(values);
-    }
-
-    return (GLOBAL_OPTIONS) this;
+    if (values.length > 0) allowedEncryptionAlgs = Set.of(values);
+    return self();
   }
 
   public Set<String> getAllowedSigningAlgs() {
-    return Collections.unmodifiableSet(allowedSigningAlgs);
+    return allowedSigningAlgs;
   }
 
-  @SuppressWarnings("unchecked")
   public GLOBAL_OPTIONS setAllowedSigningAlgs(String... values) {
-    if (values.length > 0) {
-      allowedSigningAlgs = ArrayUtil.asSet(values);
-    }
+    if (values.length > 0) allowedSigningAlgs = Set.of(values);
 
-    return (GLOBAL_OPTIONS) this;
+    return self();
   }
 
   protected void validate() throws OIDCException {

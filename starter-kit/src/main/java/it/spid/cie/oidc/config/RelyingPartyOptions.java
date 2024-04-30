@@ -11,20 +11,21 @@ import java.util.*;
 
 public class RelyingPartyOptions extends GlobalOptions<RelyingPartyOptions> {
 
-  public static final String[] SUPPORTED_APPLICATION_TYPES = new String[]{"web"};
+  public static final String[] SUPPORTED_APPLICATION_TYPES = {"web"};
 
-  public static final String[] SUPPORTED_GRANT_TYPES = new String[]{
+  public static final String[] SUPPORTED_GRANT_TYPES = {
     GrantType.REFRESH_TOKEN.value(),
     GrantType.AUTHORIZATION_CODE.value()
   };
 
-  public static final String[] SUPPORTED_RESPONSE_TYPES = new String[]{"code"};
+  public static final String[] SUPPORTED_RESPONSE_TYPES = {"code"};
 
-  public static final String[] SUPPORTED_SCOPES_SPID = new String[]{
-    Scope.OPEN_ID.value(), Scope.OFFLINE_ACCESS.value()
+  public static final String[] SUPPORTED_SCOPES_SPID = {
+    Scope.OPEN_ID.value(),
+    Scope.OFFLINE_ACCESS.value()
   };
 
-  public static final String[] SUPPORTED_SCOPES_CIE = new String[]{
+  public static final String[] SUPPORTED_SCOPES_CIE = {
     Scope.OPEN_ID.value(), Scope.OFFLINE_ACCESS.value(),
     Scope.PROFILE.value(), Scope.EMAIL.value()
   };
